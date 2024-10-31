@@ -17,7 +17,6 @@
 #include "Lib_RateMonitor.hpp"
 #include "Lib_OutputPin.hpp"
 
-
 char ident = '\0';
 bool doLogging = false;
 
@@ -44,7 +43,6 @@ Thermistor regulator2(A4);
 Thermistor regulator3(A5);
 Thermistor conduction(A6);
 Thermistor outside(A0);
-
 
 float accelerationX_mps2, accelerationY_mps2, accelerationZ_mps2;
 float gyroscopeX_dps, gyroscopeY_dps, gyroscopeZ_dps;
@@ -90,8 +88,153 @@ float forceX_N;
 Calculus::Differential<float> linearAccelerationGradient(0.25);
 float jerkX_mps3;
 
+void task100Hz()
+{
+  ledWork.toggle();
 
-void setup() {
+  float deltaTime = 1.0 / monitor100Hz.updateRate();
+
+  bno055.getAcceleration(&accelerationX_mps2, &accelerationY_mps2, &accelerationZ_mps2);
+  bno055.getGyroscope(&gyroscopeX_dps, &gyroscopeY_dps, &gyroscopeZ_dps);
+
+  roll_deg = gyroscopeIntegralX.get(gyroscopeX_dps, deltaTime);
+  pitch_deg = gyroscopeIntegralY.get(gyroscopeY_dps, deltaTime) + initialPitch_deg;
+  yaw_deg = gyroscopeIntegralZ.get(gyroscopeZ_dps, deltaTime);
+
+  gravityX_mps2 = gravity_mps2 * sin(radians(pitch_deg)) * cos(radians(yaw_deg));
+  gravityY_mps2 = gravity_mps2 * sin(radians(yaw_deg)) * cos(radians(roll_deg));
+  gravityZ_mps2 = gravity_mps2 * cos(radians(pitch_deg)) * cos(radians(roll_deg));
+
+  linearAccelerationX_mps2 = accelerationHighPassX.get(accelerationX_mps2 - gravityX_mps2, deltaTime);
+  linearAccelerationY_mps2 = accelerationHighPassY.get(accelerationY_mps2 - gravityY_mps2, deltaTime);
+  linearAccelerationZ_mps2 = accelerationHighPassZ.get(accelerationZ_mps2 - gravityZ_mps2, deltaTime);
+
+  const auto &logPacket = MsgPacketizer::encode(0x0A,
+                                                ident, millis(), flightTime, flightMode, logger.getUsage(),
+                                                accelerationX_mps2, accelerationY_mps2, accelerationZ_mps2,
+                                                gyroscopeX_dps, gyroscopeY_dps, gyroscopeZ_dps,
+                                                magnetometerX_nT, magnetometerY_nT, magnetometerZ_nT,
+                                                roll_deg, pitch_deg, yaw_deg,
+                                                forceX_N, jerkX_mps3,
+                                                pressure_kPa, altitude_m, verticalSpeed_mps, verticalAcceleration_msp2, estimated, apogee, isFalling,
+                                                groundVoltage_V, batteryVoltage_V, tieVoltage_V, busVoltage_V,
+                                                groundCurrent_mA, batteryCurrent_mA, tieCurrent_mA, busCurrent_mA,
+                                                groundPower_mW, batteryPower_mW, tiePower_mW, busPower_mW,
+                                                temperatureRegulator1_degC, temperatureRegulator2_degC, temperatureRegulator3_degC, temperatureConduction_degC,
+                                                temperatureOutside_degC, temperatureInside_degC,
+                                                temperatureVentPort_degC, temperatureTankAtmosphere_degC,
+                                                sutegomaTime_ms, sutegomeTaskRate_Hz);
+
+  if (doLogging)
+  {
+    logger.write(logPacket.data.data(), logPacket.data.size());
+  }
+}
+
+void task50Hz()
+{
+  ledWork.toggle();
+
+  temperatureOutside_degC = outside.getTemperature_degC();
+  pressure_kPa = altimeter.getPressure();
+  altitude_m = altimeter.getAltitude(temperatureOutside_degC + 273.15);
+}
+
+void task20Hz()
+{
+  ledWork.toggle();
+
+  bno055.getMagnetometer(&magnetometerX_nT, &magnetometerY_nT, &magnetometerZ_nT);
+}
+
+void task10Hz()
+{
+  ledWork.toggle();
+
+  float deltaTime = 1.0 / monitor10Hz.updateRate();
+
+  forceX_N = characteristicMass_kg * linearAccelerationX_mps2;
+  jerkX_mps3 = linearAccelerationGradient.get(linearAccelerationX_mps2, deltaTime);
+
+  can.sendDynamics(forceX_N, jerkX_mps3);
+
+  verticalSpeed_mps = altitudeGradient.get((float)altitudeAverage.reading((int16_t)(altitude_m * 10)) / 10.0, deltaTime);
+  verticalAcceleration_msp2 = verticalSpeedGradient.get(verticalSpeed_mps, deltaTime);
+
+  estimated = -verticalSpeed_mps / verticalAcceleration_msp2;
+  apogee = altitude_m + (verticalSpeed_mps * estimated + 0.5 * verticalAcceleration_msp2 * estimated * estimated);
+  isFalling = verticalSpeed_mps < 0;
+
+  can.sendTrajectory(isFalling, altitude_m);
+
+  ledCanTx.toggle();
+}
+
+void task5Hz()
+{
+  ledWork.toggle();
+
+  powerMonitor.getVoltage(&groundVoltage_V, &batteryVoltage_V, &tieVoltage_V, &busVoltage_V);
+  powerMonitor.getCurrent(&groundCurrent_mA, &batteryCurrent_mA, &tieCurrent_mA, &busCurrent_mA);
+  powerMonitor.getPower(&groundPower_mW, &batteryPower_mW, &tiePower_mW, &busPower_mW);
+  temperatureRegulator1_degC = regulator1.getTemperature_degC();
+  temperatureRegulator2_degC = regulator2.getTemperature_degC();
+  temperatureRegulator3_degC = regulator3.getTemperature_degC();
+  temperatureConduction_degC = conduction.getTemperature_degC();
+  temperatureInside_degC = altimeter.getTemperature();
+}
+
+void task2Hz()
+{
+  const auto &airTelemetryPacket = MsgPacketizer::encode(0x0A,
+                                                         static_cast<uint32_t>(millis()),
+                                                         static_cast<char>(ident),
+                                                         static_cast<uint8_t>(logger.getUsage()),
+                                                         static_cast<bool>(doLogging),
+                                                         static_cast<uint8_t>(logger.framNumber()),
+                                                         static_cast<int16_t>(accelerationX_mps2 * 10),
+                                                         static_cast<int16_t>(accelerationY_mps2 * 10),
+                                                         static_cast<int16_t>(accelerationZ_mps2 * 10),
+                                                         static_cast<int16_t>(sqrt(accelerationX_mps2 * accelerationX_mps2 + accelerationY_mps2 * accelerationY_mps2 + accelerationZ_mps2 * accelerationZ_mps2) * 10),
+                                                         static_cast<int16_t>(roll_deg * 10),
+                                                         static_cast<int16_t>(pitch_deg * 10),
+                                                         static_cast<int16_t>(yaw_deg * 10),
+                                                         static_cast<int16_t>(forceX_N * 10),
+                                                         static_cast<int16_t>(jerkX_mps3 * 10),
+                                                         static_cast<int16_t>(altitude_m * 10),
+                                                         static_cast<int16_t>(verticalSpeed_mps * 10),
+                                                         static_cast<int16_t>(estimated * 10),
+                                                         static_cast<int16_t>(apogee * 10),
+                                                         static_cast<uint8_t>(groundVoltage_V * 10),
+                                                         static_cast<uint8_t>(batteryVoltage_V * 10),
+                                                         static_cast<uint8_t>(tieVoltage_V * 10),
+                                                         static_cast<uint8_t>(busVoltage_V * 10),
+                                                         static_cast<int16_t>(groundCurrent_mA * 10),
+                                                         static_cast<int16_t>(batteryCurrent_mA * 10),
+                                                         static_cast<int16_t>(tieCurrent_mA * 10),
+                                                         static_cast<int16_t>(busCurrent_mA * 10),
+                                                         static_cast<int8_t>(groundPower_mW / 100),
+                                                         static_cast<int8_t>(batteryPower_mW / 100),
+                                                         static_cast<int8_t>(tiePower_mW / 100),
+                                                         static_cast<int8_t>(busPower_mW / 100),
+                                                         static_cast<int16_t>(temperatureRegulator1_degC * 10),
+                                                         static_cast<int16_t>(temperatureRegulator2_degC * 10),
+                                                         static_cast<int16_t>(temperatureRegulator3_degC * 10),
+                                                         static_cast<int16_t>(temperatureConduction_degC * 10),
+                                                         static_cast<int16_t>(temperatureOutside_degC * 10),
+                                                         static_cast<int16_t>(temperatureInside_degC * 10),
+                                                         static_cast<int16_t>(temperatureVentPort_degC * 10),
+                                                         static_cast<int16_t>(temperatureTankAtmosphere_degC * 10),
+                                                         static_cast<uint32_t>(sutegomaTime_ms),
+                                                         static_cast<int16_t>(sutegomeTaskRate_Hz * 10));
+
+  telemeter.reserveData(airTelemetryPacket.data.data(), airTelemetryPacket.data.size());
+  telemeter.sendReservedData();
+  ledLoRaTx.toggle();
+}
+
+void setup()
+{
   analogReadResolution(12);
   Serial.begin(115200);
   Wire.begin();
@@ -116,21 +259,26 @@ void setup() {
   Tasks.add(&task2Hz)->startFps(2);
 }
 
-
-void loop() {
+void loop()
+{
   Tasks.update();
 
-  if (can.available()) {
-    switch (can.getLatestLabel()) {
-    case Var::Label::FLIGHT_DATA: {
+  if (can.available())
+  {
+    switch (can.getLatestLabel())
+    {
+    case Var::Label::FLIGHT_DATA:
+    {
       bool newDoLogging;
       can.receiveFlight(&flightMode, &flightTime, &newDoLogging, &ident);
       ledCanRx.toggle();
 
-      if (doLogging != newDoLogging) {
+      if (doLogging != newDoLogging)
+      {
         doLogging = newDoLogging;
 
-        if (doLogging) {
+        if (doLogging)
+        {
           logger.reset();
           altimeter.setReferencePressure();
           gyroscopeIntegralX.reset();
@@ -145,14 +293,16 @@ void loop() {
       break;
     }
 
-    case Var::Label::SUTEGOMA_TEMPERATURE: {
+    case Var::Label::SUTEGOMA_TEMPERATURE:
+    {
       can.receiveSutegomaTemperature(&temperatureVentPort_degC, &temperatureTankAtmosphere_degC);
       ledCanRx.toggle();
 
       break;
     }
 
-    case Var::Label::SUTEGOMA_PERFORMANCE: {
+    case Var::Label::SUTEGOMA_PERFORMANCE:
+    {
       can.receiveSutegomaPerformance(&sutegomaTime_ms, &sutegomeTaskRate_Hz);
       ledCanRx.toggle();
 
@@ -160,149 +310,4 @@ void loop() {
     }
     }
   }
-}
-
-
-void task100Hz() {
-  ledWork.toggle();
-
-  float deltaTime = 1.0 / monitor100Hz.updateRate();
-
-  bno055.getAcceleration(&accelerationX_mps2, &accelerationY_mps2, &accelerationZ_mps2);
-  bno055.getGyroscope(&gyroscopeX_dps, &gyroscopeY_dps, &gyroscopeZ_dps);
-
-  roll_deg = gyroscopeIntegralX.get(gyroscopeX_dps, deltaTime);
-  pitch_deg = gyroscopeIntegralY.get(gyroscopeY_dps, deltaTime) + initialPitch_deg;
-  yaw_deg = gyroscopeIntegralZ.get(gyroscopeZ_dps, deltaTime);
-
-  gravityX_mps2 = gravity_mps2 * sin(radians(pitch_deg)) * cos(radians(yaw_deg));
-  gravityY_mps2 = gravity_mps2 * sin(radians(yaw_deg)) * cos(radians(roll_deg));
-  gravityZ_mps2 = gravity_mps2 * cos(radians(pitch_deg)) * cos(radians(roll_deg));
-
-  linearAccelerationX_mps2 = accelerationHighPassX.get(accelerationX_mps2 - gravityX_mps2, deltaTime);
-  linearAccelerationY_mps2 = accelerationHighPassY.get(accelerationY_mps2 - gravityY_mps2, deltaTime);
-  linearAccelerationZ_mps2 = accelerationHighPassZ.get(accelerationZ_mps2 - gravityZ_mps2, deltaTime);
-
-  const auto& logPacket = MsgPacketizer::encode(0x0A,
-    ident, millis(), flightTime, flightMode, logger.getUsage(),
-    accelerationX_mps2, accelerationY_mps2, accelerationZ_mps2,
-    gyroscopeX_dps, gyroscopeY_dps, gyroscopeZ_dps,
-    magnetometerX_nT, magnetometerY_nT, magnetometerZ_nT,
-    roll_deg, pitch_deg, yaw_deg,
-    forceX_N, jerkX_mps3,
-    pressure_kPa, altitude_m, verticalSpeed_mps, verticalAcceleration_msp2, estimated, apogee, isFalling,
-    groundVoltage_V, batteryVoltage_V, tieVoltage_V, busVoltage_V,
-    groundCurrent_mA, batteryCurrent_mA, tieCurrent_mA, busCurrent_mA,
-    groundPower_mW, batteryPower_mW, tiePower_mW, busPower_mW,
-    temperatureRegulator1_degC, temperatureRegulator2_degC, temperatureRegulator3_degC, temperatureConduction_degC,
-    temperatureOutside_degC, temperatureInside_degC,
-    temperatureVentPort_degC, temperatureTankAtmosphere_degC,
-    sutegomaTime_ms, sutegomeTaskRate_Hz
-  );
-
-  if (doLogging) {
-    logger.write(logPacket.data.data(), logPacket.data.size());
-  }
-}
-
-
-void task50Hz() {
-  ledWork.toggle();
-
-  temperatureOutside_degC = outside.getTemperature_degC();
-  pressure_kPa = altimeter.getPressure();
-  altitude_m = altimeter.getAltitude(temperatureOutside_degC + 273.15);
-}
-
-
-void task20Hz() {
-  ledWork.toggle();
-
-  bno055.getMagnetometer(&magnetometerX_nT, &magnetometerY_nT, &magnetometerZ_nT);
-}
-
-
-void task10Hz() {
-  ledWork.toggle();
-
-  float deltaTime = 1.0 / monitor10Hz.updateRate();
-
-  forceX_N = characteristicMass_kg * linearAccelerationX_mps2;
-  jerkX_mps3 = linearAccelerationGradient.get(linearAccelerationX_mps2, deltaTime);
-
-  can.sendDynamics(forceX_N, jerkX_mps3);
-
-  verticalSpeed_mps = altitudeGradient.get((float)altitudeAverage.reading((int16_t)(altitude_m * 10)) / 10.0, deltaTime);
-  verticalAcceleration_msp2 = verticalSpeedGradient.get(verticalSpeed_mps, deltaTime);
-
-  estimated = -verticalSpeed_mps / verticalAcceleration_msp2;
-  apogee = altitude_m + (verticalSpeed_mps * estimated + 0.5 * verticalAcceleration_msp2 * estimated * estimated);
-  isFalling = verticalSpeed_mps < 0;
-
-  can.sendTrajectory(isFalling, altitude_m);
-
-  ledCanTx.toggle();
-}
-
-
-void task5Hz() {
-  ledWork.toggle();
-
-  powerMonitor.getVoltage(&groundVoltage_V, &batteryVoltage_V, &tieVoltage_V, &busVoltage_V);
-  powerMonitor.getCurrent(&groundCurrent_mA, &batteryCurrent_mA, &tieCurrent_mA, &busCurrent_mA);
-  powerMonitor.getPower(&groundPower_mW, &batteryPower_mW, &tiePower_mW, &busPower_mW);
-  temperatureRegulator1_degC = regulator1.getTemperature_degC();
-  temperatureRegulator2_degC = regulator2.getTemperature_degC();
-  temperatureRegulator3_degC = regulator3.getTemperature_degC();
-  temperatureConduction_degC = conduction.getTemperature_degC();
-  temperatureInside_degC = altimeter.getTemperature();
-}
-
-void task2Hz() {
-  const auto& airTelemetryPacket = MsgPacketizer::encode(0x0A,
-    static_cast<uint32_t>(millis()),
-    static_cast<char>(ident),
-    static_cast<uint8_t>(logger.getUsage()),
-    static_cast<bool>(doLogging),
-    static_cast<uint8_t>(logger.framNumber()),
-    static_cast<int16_t>(accelerationX_mps2 * 10),
-    static_cast<int16_t>(accelerationY_mps2 * 10),
-    static_cast<int16_t>(accelerationZ_mps2 * 10),
-    static_cast<int16_t>(sqrt(accelerationX_mps2 * accelerationX_mps2 + accelerationY_mps2 * accelerationY_mps2 + accelerationZ_mps2 * accelerationZ_mps2) * 10),
-    static_cast<int16_t>(roll_deg * 10),
-    static_cast<int16_t>(pitch_deg * 10),
-    static_cast<int16_t>(yaw_deg * 10),
-    static_cast<int16_t>(forceX_N * 10),
-    static_cast<int16_t>(jerkX_mps3 * 10),
-    static_cast<int16_t>(altitude_m * 10),
-    static_cast<int16_t>(verticalSpeed_mps * 10),
-    static_cast<int16_t>(estimated * 10),
-    static_cast<int16_t>(apogee * 10),
-    static_cast<uint8_t>(groundVoltage_V * 10),
-    static_cast<uint8_t>(batteryVoltage_V * 10),
-    static_cast<uint8_t>(tieVoltage_V * 10),
-    static_cast<uint8_t>(busVoltage_V * 10),
-    static_cast<int16_t>(groundCurrent_mA * 10),
-    static_cast<int16_t>(batteryCurrent_mA * 10),
-    static_cast<int16_t>(tieCurrent_mA * 10),
-    static_cast<int16_t>(busCurrent_mA * 10),
-    static_cast<int8_t>(groundPower_mW / 100),
-    static_cast<int8_t>(batteryPower_mW / 100),
-    static_cast<int8_t>(tiePower_mW / 100),
-    static_cast<int8_t>(busPower_mW / 100),
-    static_cast<int16_t>(temperatureRegulator1_degC * 10),
-    static_cast<int16_t>(temperatureRegulator2_degC * 10),
-    static_cast<int16_t>(temperatureRegulator3_degC * 10),
-    static_cast<int16_t>(temperatureConduction_degC * 10),
-    static_cast<int16_t>(temperatureOutside_degC * 10),
-    static_cast<int16_t>(temperatureInside_degC * 10),
-    static_cast<int16_t>(temperatureVentPort_degC * 10),
-    static_cast<int16_t>(temperatureTankAtmosphere_degC * 10),
-    static_cast<uint32_t>(sutegomaTime_ms),
-    static_cast<int16_t>(sutegomeTaskRate_Hz * 10)
-  );
-
-  telemeter.reserveData(airTelemetryPacket.data.data(), airTelemetryPacket.data.size());
-  telemeter.sendReservedData();
-  ledLoRaTx.toggle();
 }

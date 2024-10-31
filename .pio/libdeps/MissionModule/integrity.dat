@@ -1,0 +1,7 @@
+seeed-studio/CAN_BUS_Shield@^2.3.3
+sparkfun/SparkFun BME280@^2.0.9
+hideakitai/TaskManager@^0.5.2
+adafruit/Adafruit BusIO@^1.16.1
+adafruit/Adafruit INA219@^1.2.3
+frankboesing/FastCRC@^1.41
+sandeepmistry/LoRa@^0.8.0

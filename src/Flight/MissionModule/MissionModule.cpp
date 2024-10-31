@@ -10,7 +10,6 @@
 #include "Lib_RateMonitor.hpp"
 #include "Lib_OutputPin.hpp"
 
-
 char ident = '\0';
 bool doLogging = false;
 uint8_t phase = 0;
@@ -31,8 +30,37 @@ OutputPin ledLogging(2);
 
 ADXL375 adxl(15);
 
+void task1kHz()
+{
+  ledWork.set(doLogging);
 
-void setup() {
+  uint8_t x0, x1, y0, y1, z0, z1;
+  adxl.getAcceleration(&x0, &x1, &y0, &y1, &z0, &z1);
+
+  const auto &logPacket = MsgPacketizer::encode(0x0A,
+                                                ident, micros(), flightTime, flightMode, logger.getUsage(),
+                                                phase, x0, x1, y0, y1, z0, z1);
+
+  if (doLogging)
+  {
+    logger.write(logPacket.data.data(), logPacket.data.size());
+  }
+}
+
+void startLogging()
+{
+  doLogging = true;
+  ledLogging.high();
+}
+
+void stopLogging()
+{
+  doLogging = false;
+  ledLogging.low();
+}
+
+void setup()
+{
   Serial.begin(115200);
   Wire.begin();
   SPI.begin();
@@ -47,24 +75,31 @@ void setup() {
   Tasks.add("stop-logging", &stopLogging);
 }
 
-
-void loop() {
+void loop()
+{
   Tasks.update();
 
-  if (can.available()) {
-    switch (can.getLatestLabel()) {
-    case Var::Label::FLIGHT_DATA: {
+  if (can.available())
+  {
+    switch (can.getLatestLabel())
+    {
+    case Var::Label::FLIGHT_DATA:
+    {
       uint8_t nextFlightMode;
       bool doLoggingDontUse;
       can.receiveFlight(&nextFlightMode, &flightTime, &doLoggingDontUse, &ident);
       ledCanRx.toggle();
 
-      if (flightMode == nextFlightMode) break;
-      if (doLogging && flightMode != 1) break;
+      if (flightMode == nextFlightMode)
+        break;
+      if (doLogging && flightMode != 1)
+        break;
 
-      if (nextFlightMode == 1) {
+      if (nextFlightMode == 1)
+      {
         // 推進前計測フェーズ
-        if (flightMode == 0) {
+        if (flightMode == 0)
+        {
           logger.reset();
         }
 
@@ -72,9 +107,11 @@ void loop() {
         startLogging();
       }
 
-      if (nextFlightMode == 2) {
+      if (nextFlightMode == 2)
+      {
         // 推進計測フェーズ
-        if (flightMode == 0) {
+        if (flightMode == 0)
+        {
           logger.reset();
         }
 
@@ -83,14 +120,16 @@ void loop() {
         Tasks["stop-logging"]->startOnceAfterSec(3);
       }
 
-      if (nextFlightMode == 5) {
+      if (nextFlightMode == 5)
+      {
         // ドローグシュート開傘フェーズ
         phase = 3;
         startLogging();
         Tasks["stop-logging"]->startOnceAfterSec(4);
       }
 
-      if (nextFlightMode == 6) {
+      if (nextFlightMode == 6)
+      {
         // メインシュート開傘フェーズ
         phase = 4;
         startLogging();
@@ -102,33 +141,4 @@ void loop() {
     }
     }
   }
-}
-
-
-void task1kHz() {
-  ledWork.set(doLogging);
-
-  uint8_t x0, x1, y0, y1, z0, z1;
-  adxl.getAcceleration(&x0, &x1, &y0, &y1, &z0, &z1);
-
-  const auto& logPacket = MsgPacketizer::encode(0x0A,
-    ident, micros(), flightTime, flightMode, logger.getUsage(),
-    phase, x0, x1, y0, y1, z0, z1
-  );
-
-  if (doLogging) {
-    logger.write(logPacket.data.data(), logPacket.data.size());
-  }
-}
-
-
-void startLogging() {
-  doLogging = true;
-  ledLogging.high();
-}
-
-
-void stopLogging() {
-  doLogging = false;
-  ledLogging.low();
 }

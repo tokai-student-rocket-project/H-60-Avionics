@@ -122,24 +122,6 @@ void task100Hz()
     return;
   }
 
-  void flightModeReset()
-  {
-    if (flightMode.is(Var::FlightMode::STANDBY))
-    {
-      return;
-    }
-
-    if (flightMode.is(Var::FlightMode::DATA_PROTECTION))
-    {
-      return;
-    }
-
-    flightMode.change(Var::FlightMode::STANDBY);
-    logger.reset();
-    ident = static_cast<char>(random(65, 91));
-    buzzer.beepLongOnce();
-  }
-
   // reset
   if (flightMode.isNot(Var::FlightMode::STANDBY) && flightMode.isNot(Var::FlightMode::READY_TO_FLY) && flightPin.isClosed())
   {

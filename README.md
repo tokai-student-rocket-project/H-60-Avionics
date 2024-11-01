@@ -5,7 +5,7 @@ H-60搭載計器 すばる1.2 | 2024年度 冬季 大樹
 
 # 注意
 
-MsgPacketizer.h と Packetizer.h は自身の環境に直接クローンする
+MsgPacketizer.h, Packetizer.h, MsgPack.h は自身の環境に直接クローンする
 
 ## 場所
 ### Flight Module

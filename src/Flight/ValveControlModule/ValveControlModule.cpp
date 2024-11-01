@@ -37,29 +37,60 @@ uint32_t retryCount = 0;
 uint32_t lastSendTime = 0;
 bool isVerified = true;
 
-void setup()
+void verifyValve()
 {
-  Serial.begin(115200);
-  Serial1.begin(115200, SERIAL_8N1);
-  SPI.begin();
+  if (isVerified)
+  {
+    return;
+  }
 
-  can.begin();
+  if (retryCount == 0 && (millis() - lastSendTime) < 300)
+  {
+    return;
+  }
 
-  supplyValve.torqueOn(1);
-  mainValve.initialize();
+  if (retryCount >= 5)
+  {
+    return;
+  }
 
-  Tasks.add(&processSignal)->startFps(100);
-  Tasks.add(&sendValveMode)->startFps(60);
-  Tasks.add(&sendValveData)->startFps(10);
+  if ((millis() - lastSendTime) < 50)
+  {
+    return;
+  }
 
-  changeMode(Var::ValveMode::WAITING);
+  if (currentMode == Var::ValveMode::WAITING)
+  {
+    bool isClosed = (mainValve.readDesiredPosition(0x01) > -1000) && (mainValve.readDesiredPosition(0x01) < 1000);
+
+    if (isClosed)
+    {
+      isVerified = true;
+    }
+    else
+    {
+      retryCount++;
+      lastSendTime = millis();
+      closeMainValve();
+    }
+  }
+
+  if (currentMode == Var::ValveMode::LAUNCH)
+  {
+    bool isOpen = (mainValve.readDesiredPosition(0x01) > -7500) && (mainValve.readDesiredPosition(0x01) < -5500);
+
+    if (isOpen)
+    {
+      isVerified = true;
+    }
+    else
+    {
+      retryCount++;
+      lastSendTime = millis();
+      openMainValve();
+    }
+  }
 }
-
-void loop()
-{
-  Tasks.update();
-}
-
 void addTaskIfNotExisted(const String &name, void (*callback)())
 {
   if (!Tasks.exists(name))
@@ -141,57 +172,25 @@ void sendValveData()
       mainValve.readCurrentVelosity(0x01));
 }
 
-void verifyValve()
+void setup()
 {
-  if (isVerified)
-  {
-    return;
-  }
+  Serial.begin(115200);
+  Serial1.begin(115200, SERIAL_8N1);
+  SPI.begin();
 
-  if (retryCount == 0 && (millis() - lastSendTime) < 300)
-  {
-    return;
-  }
+  can.begin();
 
-  if (retryCount >= 5)
-  {
-    return;
-  }
+  supplyValve.torqueOn(1);
+  mainValve.initialize();
 
-  if ((millis() - lastSendTime) < 50)
-  {
-    return;
-  }
+  Tasks.add(&processSignal)->startFps(100);
+  Tasks.add(&sendValveMode)->startFps(60);
+  Tasks.add(&sendValveData)->startFps(10);
 
-  if (currentMode == Var::ValveMode::WAITING)
-  {
-    bool isClosed = (mainValve.readDesiredPosition(0x01) > -1000) && (mainValve.readDesiredPosition(0x01) < 1000);
+  changeMode(Var::ValveMode::WAITING);
+}
 
-    if (isClosed)
-    {
-      isVerified = true;
-    }
-    else
-    {
-      retryCount++;
-      lastSendTime = millis();
-      closeMainValve();
-    }
-  }
-
-  if (currentMode == Var::ValveMode::LAUNCH)
-  {
-    bool isOpen = (mainValve.readDesiredPosition(0x01) > -7500) && (mainValve.readDesiredPosition(0x01) < -5500);
-
-    if (isOpen)
-    {
-      isVerified = true;
-    }
-    else
-    {
-      retryCount++;
-      lastSendTime = millis();
-      openMainValve();
-    }
-  }
+void loop()
+{
+  Tasks.update();
 }

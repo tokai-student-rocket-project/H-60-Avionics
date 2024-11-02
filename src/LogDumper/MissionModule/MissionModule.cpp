@@ -1,12 +1,65 @@
 #include <MsgPacketizer.h>
 #include "Lib_FRAM.hpp"
 
-
 FRAM fram0(A6);
 FRAM fram1(A5);
 
+void dump(FRAM *fram)
+{
+  uint8_t data[4096];
+  uint32_t size = 0;
+  uint32_t writeAddress = 0;
 
-void setup() {
+  for (uint32_t address = 0; address < FRAM::LENGTH; address++)
+  {
+    data[writeAddress] = fram->read(address);
+    size = writeAddress + 1;
+
+    Serial.print(data[writeAddress], HEX);
+
+    if (data[writeAddress] == 0x00)
+    {
+      writeAddress = 0;
+
+      if (data[1] == 0x0A)
+      {
+        MsgPacketizer::feed(data, size);
+        Serial.println();
+      }
+    }
+    else
+    {
+      writeAddress++;
+      Serial.print(" ");
+    }
+  }
+}
+
+void printHeader()
+{
+  Serial.print("ident");
+  Serial.print(",");
+  Serial.print("micros");
+  Serial.print(",");
+  Serial.print("flightTime");
+  Serial.print(",");
+  Serial.print("flightMode");
+  Serial.print(",");
+  Serial.print("loggerUsage");
+  Serial.print(",");
+
+  Serial.print("phase");
+  Serial.print(",");
+  Serial.print("accelerationX_mps2");
+  Serial.print(",");
+  Serial.print("accelerationY_mps2");
+  Serial.print(",");
+  Serial.print("accelerationZ_mps2");
+  Serial.print("\n");
+}
+
+void setup()
+{
   Serial.begin(115200);
   SPI.begin();
 
@@ -27,7 +80,8 @@ void setup() {
   //   }
   // );
 
-  while (!Serial);
+  while (!Serial)
+    ;
   delay(5000);
   printHeader();
   pinMode(LED_BUILTIN, OUTPUT);
@@ -37,47 +91,6 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);
 }
 
-
-void loop() {
-}
-
-
-void dump(FRAM* fram) {
-  uint8_t data[4096];
-  uint32_t size = 0;
-  uint32_t writeAddress = 0;
-
-  for (uint32_t address = 0; address < FRAM::LENGTH; address++) {
-    data[writeAddress] = fram->read(address);
-    size = writeAddress + 1;
-
-    Serial.print(data[writeAddress], HEX);
-
-    if (data[writeAddress] == 0x00) {
-      writeAddress = 0;
-
-      if (data[1] == 0x0A) {
-        MsgPacketizer::feed(data, size);
-        Serial.println();
-      }
-    }
-    else {
-      writeAddress++;
-      Serial.print(" ");
-    }
-  }
-}
-
-
-void printHeader() {
-  Serial.print("ident"); Serial.print(",");
-  Serial.print("micros"); Serial.print(",");
-  Serial.print("flightTime"); Serial.print(",");
-  Serial.print("flightMode"); Serial.print(",");
-  Serial.print("loggerUsage"); Serial.print(",");
-
-  Serial.print("phase"); Serial.print(",");
-  Serial.print("accelerationX_mps2"); Serial.print(",");
-  Serial.print("accelerationY_mps2"); Serial.print(",");
-  Serial.print("accelerationZ_mps2"); Serial.print("\n");
+void loop()
+{
 }

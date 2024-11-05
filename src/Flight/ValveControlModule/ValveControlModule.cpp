@@ -24,14 +24,15 @@ RS405CB supplyValve(3);
 void openSupplyValve() { supplyValve.move(1, 0, 200); }
 void closeSupplyValve() { supplyValve.move(1, -800, 30); }
 
-Var::ValveMode currentMode = Var::ValveMode::LAUNCH;
+Var::ValveMode currentValveMode = Var::ValveMode::LAUNCH;
+Var::FlightMode currentFlightMode = Var::FlightMode::STANDBY;
 
-GseSignal gseClose(7);
-GseSignal gseOpen(8);
+GseSignal gseValve(7);
+GseSignal gseIgniter(8);
 
 constexpr uint16_t MODE_CHANGING_THRESHOLD = 5;
-CountDetector waitingSignalCounter(MODE_CHANGING_THRESHOLD);
-CountDetector launchSignalCounter(MODE_CHANGING_THRESHOLD);
+CountDetector valveSignalCounter(MODE_CHANGING_THRESHOLD);
+CountDetector igniterSignalCounter(MODE_CHANGING_THRESHOLD);
 
 uint32_t retryCount = 0;
 uint32_t lastSendTime = 0;
@@ -59,7 +60,7 @@ void verifyValve()
     return;
   }
 
-  if (currentMode == Var::ValveMode::WAITING)
+  if (currentValveMode == Var::ValveMode::WAITING)
   {
     bool isClosed = (mainValve.readDesiredPosition(0x01) > -1000) && (mainValve.readDesiredPosition(0x01) < 1000);
 
@@ -75,7 +76,7 @@ void verifyValve()
     }
   }
 
-  if (currentMode == Var::ValveMode::LAUNCH)
+  if (currentValveMode == Var::ValveMode::LAUNCH)
   {
     bool isOpen = (mainValve.readDesiredPosition(0x01) > -7500) && (mainValve.readDesiredPosition(0x01) < -5500);
 
@@ -91,6 +92,7 @@ void verifyValve()
     }
   }
 }
+
 void addTaskIfNotExisted(const String &name, void (*callback)())
 {
   if (!Tasks.exists(name))
@@ -101,7 +103,7 @@ void addTaskIfNotExisted(const String &name, void (*callback)())
 
 void changeMode(Var::ValveMode nextMode)
 {
-  if (nextMode == currentMode)
+  if (nextMode == currentValveMode)
     return;
 
   retryCount = 0;
@@ -112,42 +114,59 @@ void changeMode(Var::ValveMode nextMode)
   {
     ledWaitingMode.low();
     ledLaunchMode.high();
-    buzzer.beep(3);
 
     closeSupplyValve();
 
     addTaskIfNotExisted("delayed-open-main-valve", &openMainValve);
     Tasks["delayed-open-main-valve"]->startOnceAfterSec(0.3);
+    buzzer.beepLong(1);
   }
 
   if (nextMode == Var::ValveMode::WAITING)
   {
     ledWaitingMode.high();
     ledLaunchMode.low();
-    buzzer.beepLong(2);
+    buzzer.beep(2);
 
     closeMainValve();
     openSupplyValve();
   }
 
-  currentMode = nextMode;
+  currentValveMode = nextMode;
+}
+
+void changeFlightMode(Var::FlightMode nextMode)
+{
+  if (nextMode == Var::FlightMode::READY_TO_FLY)
+  {
+    Serial.println("Hello");
+  }
 }
 
 void processSignal()
 {
   ledWork.toggle();
 
-  waitingSignalCounter.update(gseClose.isSignaled());
-  launchSignalCounter.update(gseOpen.isSignaled() && !gseClose.isSignaled());
+  igniterSignalCounter.update(gseIgniter.isSignaled());
+  valveSignalCounter.update(gseValve.isSignaled());
 
-  if (waitingSignalCounter.isExceeded())
+  if (valveSignalCounter.isExceeded())
+  {
+    changeMode(Var::ValveMode::LAUNCH);
+  }
+  else
   {
     changeMode(Var::ValveMode::WAITING);
   }
 
-  if (launchSignalCounter.isExceeded())
+  if (igniterSignalCounter.isExceeded() || valveSignalCounter.isExceeded())
   {
-    changeMode(Var::ValveMode::LAUNCH);
+    changeFlightMode(Var::FlightMode::READY_TO_FLY);
+    Serial.println(millis());
+  }
+  else
+  {
+    changeFlightMode(Var::FlightMode::STANDBY);
   }
 
   verifyValve();
@@ -155,7 +174,7 @@ void processSignal()
 
 void sendValveMode()
 {
-  can.sendValveMode(currentMode == Var::ValveMode::LAUNCH);
+  can.sendValveMode(currentValveMode == Var::ValveMode::LAUNCH);
 }
 
 void sendValveData()

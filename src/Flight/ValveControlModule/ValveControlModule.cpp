@@ -25,7 +25,7 @@ void openSupplyValve() { supplyValve.move(1, 0, 200); }
 void closeSupplyValve() { supplyValve.move(1, -800, 30); }
 
 Var::ValveMode currentValveMode = Var::ValveMode::LAUNCH;
-Var::FlightMode currentFlightMode = Var::FlightMode::STANDBY;
+Var::GseSignal currentSignal = Var::GseSignal::IGNITION_ON;
 
 GseSignal gseValve(7);
 GseSignal gseIgniter(8);
@@ -135,30 +135,39 @@ void changeMode(Var::ValveMode nextMode)
   currentValveMode = nextMode;
 }
 
-// void changeFlightMode(Var::FlightMode nextMode)
-// {
-//   if (nextMode == Var::FlightMode::READY_TO_FLY)
-//   {
-//     Serial.println("Hello");
-//   }
-// }
+void changeIgnition(Var::GseSignal nextMode)
+{
+  if (nextMode == currentSignal)
+    return;
+  if (nextMode == Var::GseSignal::IGNITION_ON)
+  {
+    Serial.println("Hello");
+  }
+
+  if (nextMode == Var::GseSignal::IGNITION_OFF)
+  {
+    Serial.println("Arduino");
+  }
+  currentSignal = nextMode;
+}
 
 void processSignal()
 {
   ledWork.toggle();
 
-  // igniterSignalCounter.update(gseIgniter.isSignaled());
+  igniterSignalCounter.update(gseIgniter.isSignaled());
   valveSignalCounter.update(gseValve.isSignaled());
 
-  // if (igniterSignalCounter.isExceeded() || valveSignalCounter.isExceeded())
-  // {
-  //   changeFlightMode(Var::FlightMode::READY_TO_FLY);
-  //   Serial.println(millis());
-  // }
-  // else
-  // {
-  //   changeFlightMode(Var::FlightMode::STANDBY);
-  // }
+  if (igniterSignalCounter.isExceeded())
+  {
+    // changeIgnition(Var::GseSignal::IGNITION);
+    currentSignal = Var::GseSignal::IGNITION_ON;
+  }
+  else
+  {
+    // changeIgnition(Var::GseSignal::OFF);
+    currentSignal = Var::GseSignal::IGNITION_OFF;
+  }
 
   if (valveSignalCounter.isExceeded())
   {
@@ -175,6 +184,11 @@ void processSignal()
 void sendValveMode()
 {
   can.sendValveMode(currentValveMode == Var::ValveMode::LAUNCH);
+}
+
+void sendIgnition()
+{
+  can.sendIgnition(currentSignal == Var::GseSignal::IGNITION_ON);
 }
 
 void sendValveData()
@@ -204,9 +218,11 @@ void setup()
 
   Tasks.add(&processSignal)->startFps(100);
   Tasks.add(&sendValveMode)->startFps(60);
+  Tasks.add(&sendIgnition)->startFps(60);
   Tasks.add(&sendValveData)->startFps(10);
 
   changeMode(Var::ValveMode::WAITING);
+  changeIgnition(Var::GseSignal::IGNITION_OFF);
 }
 
 void loop()

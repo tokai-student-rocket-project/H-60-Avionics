@@ -1,0 +1,11 @@
+seeed-studio/CAN_BUS_Shield@^2.3.3
+adafruit/Adafruit INA219@^1.2.3
+sparkfun/SparkFun BME280@^2.0.9
+hideakitai/Filters@^0.1.2
+frankboesing/FastCRC@^1.41
+sparkfun/SparkFun u-blox GNSS Arduino Library@^2.2.27
+adafruit/Adafruit BusIO@^1.16.1
+hideakitai/TaskManager@^0.5.2
+sandeepmistry/LoRa@^0.8.0
+jchristensen/movingAvg@^2.3.1
+hideakitai/CRCx@^0.4.0

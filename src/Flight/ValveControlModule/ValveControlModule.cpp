@@ -160,13 +160,13 @@ void processSignal()
 
   if (igniterSignalCounter.isExceeded())
   {
-    // changeIgnition(Var::GseSignal::IGNITION);
-    currentSignal = Var::GseSignal::IGNITION_ON;
+    changeIgnition(Var::GseSignal::IGNITION_ON);
+    // currentSignal = Var::GseSignal::IGNITION_ON;
   }
   else
   {
-    // changeIgnition(Var::GseSignal::OFF);
-    currentSignal = Var::GseSignal::IGNITION_OFF;
+    changeIgnition(Var::GseSignal::IGNITION_OFF);
+    // currentSignal = Var::GseSignal::IGNITION_OFF;
   }
 
   if (valveSignalCounter.isExceeded())

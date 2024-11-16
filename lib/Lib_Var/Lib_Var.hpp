@@ -2,10 +2,11 @@
 
 #include <Arduino.h>
 
-
-class Var {
+class Var
+{
 public:
-  enum class FlightMode : uint8_t {
+  enum class FlightMode : uint8_t
+  {
     STANDBY,
     READY_TO_FLY,
     POWERED_CLIMB,
@@ -18,7 +19,8 @@ public:
     DATA_PROTECTION
   };
 
-  enum class Label : uint32_t {
+  enum class Label : uint32_t
+  {
     FLIGHT_DATA,
     TRAJECTORY_DATA,
     VALVE_MODE,
@@ -27,14 +29,23 @@ public:
     VALVE_DATA_PART_2,
     SUTEGOMA_TEMPERATURE = 0xF0,
     SUTEGOMA_PERFORMANCE = 0xF1,
+    GSE_SIGNAL,
   };
 
-  enum class ValveMode : uint8_t {
+  enum class ValveMode : uint8_t
+  {
     WAITING,
     LAUNCH
   };
 
-  enum class Timer : uint8_t {
+  enum class GseSignal : uint8_t
+  {
+    IGNITION_OFF,
+    IGNITION_ON
+  };
+
+  enum class Timer : uint8_t
+  {
     SEPARATION_1_PROTECTION_TIME,
     SEPARATION_1_FORCE_TIME,
     SEPARATION_2_PROTECTION_TIME,

@@ -41,6 +41,7 @@ bool doLogging = false;
 bool isFalling;
 float altitude;
 bool isLaunchMode;
+bool isIgnition;
 float forceX_N;
 float jerkX_mps3;
 
@@ -165,10 +166,10 @@ void task100Hz()
   {
   case (Var::FlightMode::STANDBY):
   {
-    if (flightPin.isOpen() || isLaunchMode)
+    if (flightPin.isOpen() || isLaunchMode || isIgnition)
     {
       flightModeOn();
-      // Serial.println("WKUP");
+      Serial.println("WKUP");
     }
 
     break;
@@ -431,6 +432,13 @@ void loop()
     case Var::Label::VALVE_MODE:
     {
       can.receiveValveMode(&isLaunchMode);
+      ledCanRx.toggle();
+
+      break;
+    }
+    case Var::Label::GSE_SIGNAL:
+    {
+      can.receiveIgnition(&isIgnition);
       ledCanRx.toggle();
 
       break;

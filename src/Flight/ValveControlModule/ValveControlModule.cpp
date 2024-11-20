@@ -25,7 +25,7 @@ void openSupplyValve() { supplyValve.move(1, 0, 200); }
 void closeSupplyValve() { supplyValve.move(1, -800, 30); }
 
 Var::ValveMode currentValveMode = Var::ValveMode::LAUNCH;
-Var::GseSignal currentSignal = Var::GseSignal::IGNITION_ON;
+Var::GseSignal currentGseSignal = Var::GseSignal::IGNITION_ON;
 
 GseSignal gseValve(7);
 GseSignal gseIgniter(8);
@@ -137,7 +137,7 @@ void changeMode(Var::ValveMode nextMode)
 
 void changeIgnition(Var::GseSignal nextMode)
 {
-  if (nextMode == currentSignal)
+  if (nextMode == currentGseSignal)
     return;
   if (nextMode == Var::GseSignal::IGNITION_ON)
   {
@@ -148,7 +148,7 @@ void changeIgnition(Var::GseSignal nextMode)
   {
     Serial.println("Arduino");
   }
-  currentSignal = nextMode;
+  currentGseSignal = nextMode;
 }
 
 void processSignal()
@@ -161,12 +161,10 @@ void processSignal()
   if (igniterSignalCounter.isExceeded())
   {
     changeIgnition(Var::GseSignal::IGNITION_ON);
-    // currentSignal = Var::GseSignal::IGNITION_ON;
   }
   else
   {
     changeIgnition(Var::GseSignal::IGNITION_OFF);
-    // currentSignal = Var::GseSignal::IGNITION_OFF;
   }
 
   if (valveSignalCounter.isExceeded())
@@ -188,7 +186,7 @@ void sendValveMode()
 
 void sendIgnition()
 {
-  can.sendIgnition(currentSignal == Var::GseSignal::IGNITION_ON);
+  can.sendIgnition(currentGseSignal == Var::GseSignal::IGNITION_ON);
 }
 
 void sendValveData()

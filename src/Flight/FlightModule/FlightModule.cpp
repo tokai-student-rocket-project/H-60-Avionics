@@ -169,7 +169,7 @@ void task100Hz()
     if (flightPin.isOpen() || isLaunchMode || isIgnition)
     {
       flightModeOn();
-      Serial.println("WKUP");
+      // Serial.println("WKUP");
     }
 
     break;
@@ -271,7 +271,7 @@ void task100Hz()
 
   doLogging = newDoLogging;
   ledWork.set(doLogging);
-  Serial.println(flightMode.currentNumber());
+  // Serial.println(flightMode.currentNumber());
 
   const auto &logPacket = MsgPacketizer::encode(0x0A,
                                                 ident, millis(), flightTime.get(), flightMode.currentNumber(), logger.getUsage(),
@@ -291,6 +291,10 @@ void task10Hz()
 {
   can.sendFlight(flightMode.currentNumber(), flightTime.get(), doLogging, ident);
   ledCanTx.toggle();
+
+  // Serial.print(gnss.getLatitude(), 8);    // GNSSのテスト用
+  // Serial.print(",");                      // GNSSのテスト用
+  // Serial.println(gnss.getLongitude(), 8); // GNSSのテスト用
 }
 
 void task2Hz()

@@ -27,7 +27,7 @@ void setup() {
 
   MsgPacketizer::subscribe(LoRa, 0x0A,
     [](
-      char ident,
+      /*char ident,
       uint32_t millis,
       uint8_t flightMode,
       uint16_t flightTime,
@@ -56,15 +56,15 @@ void setup() {
       uint16_t separation1ForceTime,
       uint16_t separation2ProtectionTime,
       uint16_t separation2ForceTime,
-      uint16_t landingTime
+      uint16_t landingTime*/
       )
     {
       packet.clear();
 
-      packet["packet"]["module"] = "F";
+      //packet["packet"]["module"] = "F";
       packet["packet"]["rssi_dBm"] = LoRa.packetRssi();
       packet["packet"]["snr_dBm"] = LoRa.packetSnr();
-      packet["packet"]["ident"] = (String)ident;
+      /*packet["packet"]["ident"] = (String)ident;
       packet["packet"]["uptime_s"] = (float)millis / 1000.0;
 
       packet["logger"]["doLogging"] = doLogging;
@@ -98,7 +98,7 @@ void setup() {
       packet["timer"]["separation_1_force_time"] = (float)separation1ForceTime / 1000.0;
       packet["timer"]["separation_2_protection_time"] = (float)separation2ProtectionTime / 1000.0;
       packet["timer"]["separation_2_force_time"] = (float)separation2ForceTime / 1000.0;
-      packet["timer"]["landing_time"] = (float)landingTime / 1000.0;
+      packet["timer"]["landing_time"] = (float)landingTime / 1000.0;*/
 
       serializeJson(packet, Serial);
       Serial.println();

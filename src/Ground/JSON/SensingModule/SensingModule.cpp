@@ -20,7 +20,7 @@ void setup() {
 
   MsgPacketizer::subscribe(LoRa, 0x0A,
     [](
-      uint32_t millis,
+      /*uint32_t millis,
       char ident,
       uint8_t loggerUsage,
       bool doLogging,
@@ -59,15 +59,15 @@ void setup() {
       int16_t temperatureVentPort_degC,
       int16_t temperatureTankAtmosphere_degC,
       uint32_t sutegomaTime_ms,
-      int16_t sutegomeTaskRate_Hz
+      int16_t sutegomeTaskRate_Hz*/
       )
     {
       packet.clear();
 
-      packet["packet"]["module"] = "S";
+      //packet["packet"]["module"] = "S";
       packet["packet"]["rssi_dBm"] = LoRa.packetRssi();
       packet["packet"]["snr_dBm"] = LoRa.packetSnr();
-      packet["packet"]["ident"] = (String)ident;
+      /*packet["packet"]["ident"] = (String)ident;
       packet["packet"]["uptime_s"] = (float)millis / 1000.0;
 
       packet["logger"]["doLogging"] = doLogging;
@@ -112,7 +112,7 @@ void setup() {
       packet["thermal"]["temperature_degC"]["tankAtmosphere"] = (float)temperatureTankAtmosphere_degC / 10.0;
 
       packet["sutegoma"]["uptime_s"] = (float)sutegomaTime_ms / 1000.0;
-      packet["sutegoma"]["taskRate_Hz"] = (float)sutegomeTaskRate_Hz / 10.0;
+      packet["sutegoma"]["taskRate_Hz"] = (float)sutegomeTaskRate_Hz / 10.0;*/
 
       serializeJson(packet, Serial);
       Serial.println();

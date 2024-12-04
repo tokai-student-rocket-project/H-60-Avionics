@@ -271,6 +271,8 @@ void task100Hz()
 
   doLogging = newDoLogging;
   ledWork.set(doLogging);
+
+  // フライトモードの表示
   // Serial.println(flightMode.currentNumber());
 
   const auto &logPacket = MsgPacketizer::encode(0x0A,

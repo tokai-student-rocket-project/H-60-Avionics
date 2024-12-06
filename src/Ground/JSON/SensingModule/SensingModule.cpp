@@ -6,18 +6,19 @@
 #include <TaskManager.h>
 #include <ArduinoJson.h>
 
+
 StaticJsonDocument<4096> packet;
 
-void setup()
-{
-  Serial.begin(115200);
 
+void setup(){
+  Serial.begin(115200);
   pinMode(LED_BUILTIN, OUTPUT);
 
   LoRa.begin(924.2E6);
   LoRa.setSignalBandwidth(500E3);
 
   MsgPacketizer::subscribe(LoRa, 0x0A,
+
                            [](
                                uint32_t millis,
                                char ident,

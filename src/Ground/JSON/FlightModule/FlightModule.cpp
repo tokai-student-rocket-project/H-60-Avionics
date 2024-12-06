@@ -6,7 +6,9 @@
 #include <TaskManager.h>
 #include <ArduinoJson.h>
 
+
 StaticJsonDocument<4096> packet;
+
 
 uint16_t separation1ProtectionTime = 8232;
 uint16_t separation1ForceTime = 11232;
@@ -14,8 +16,8 @@ uint16_t separation2ProtectionTime = 18232;
 uint16_t separation2ForceTime = 19232;
 uint16_t landingTime = 24832;
 
-void setup()
-{
+
+void setup() {
   Serial.begin(115200);
 
   pinMode(LED_BUILTIN, OUTPUT);
@@ -24,6 +26,7 @@ void setup()
   LoRa.setSignalBandwidth(500E3);
 
   MsgPacketizer::subscribe(LoRa, 0x0A,
+
                            [](
                                char ident,
                                uint32_t millis,
@@ -121,25 +124,23 @@ void loop()
       LoRa.endPacket();
     }
 
-    if (command == 'R')
-    {
-      const auto &packet = MsgPacketizer::encode(0xF2, (uint8_t)0);
+
+    if (command == 'R') {
+      const auto& packet = MsgPacketizer::encode(0xF2, (uint8_t)0);
       LoRa.beginPacket();
       LoRa.write(packet.data.data(), packet.data.size());
       LoRa.endPacket();
     }
-
-    if (command == 'C')
-    {
-      const auto &packet = MsgPacketizer::encode(0xF3, separation1ProtectionTime, separation1ForceTime, separation2ProtectionTime, separation2ForceTime, landingTime);
+    if (command == 'C') {
+      const auto& packet = MsgPacketizer::encode(0xF3, separation1ProtectionTime, separation1ForceTime, separation2ProtectionTime, separation2ForceTime, landingTime);
       LoRa.beginPacket();
       LoRa.write(packet.data.data(), packet.data.size());
       LoRa.endPacket();
     }
   }
 
-  if (LoRa.parsePacket())
-  {
+
+  if (LoRa.parsePacket()) {
     MsgPacketizer::parse();
   }
 }

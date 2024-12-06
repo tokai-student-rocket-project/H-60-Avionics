@@ -1,7 +1,7 @@
 #include "Lib_GNSS.hpp"
 
-
-void GNSS::begin() {
+void GNSS::begin()
+{
   Wire.begin();
 
   _gnss.begin();
@@ -10,9 +10,10 @@ void GNSS::begin() {
   _gnss.setAutoPVT(true);
 }
 
-
-bool GNSS::available() {
-  if (!_gnss.getPVT() || _gnss.getInvalidLlh()) {
+bool GNSS::available()
+{
+  if (!_gnss.getPVT() || _gnss.getInvalidLlh())
+  {
     return false;
   }
 
@@ -23,53 +24,53 @@ bool GNSS::available() {
   return latitude != 0 && longitude != 0;
 }
 
-
-float GNSS::getLatitude() {
+float GNSS::getLatitude()
+{
   return (float)_gnss.getLatitude() / 10000000.0;
 }
 
-
-float GNSS::getLongitude() {
+float GNSS::getLongitude()
+{
   return (float)_gnss.getLongitude() / 10000000.0;
 }
 
-
-uint8_t GNSS::getSatelliteCount() {
+uint8_t GNSS::getSatelliteCount()
+{
   return _gnss.getSIV();
 }
 
-
-bool GNSS::isFixed() {
+bool GNSS::isFixed()
+{
   return _gnss.getGnssFixOk();
 }
 
-
-uint8_t GNSS::getFixType() {
+uint8_t GNSS::getFixType()
+{
   return _gnss.getFixType();
 }
 
-
-float GNSS::getAltitude() {
+float GNSS::getAltitude()
+{
   return _gnss.getAltitude() / 1000.0;
 }
 
-
-float GNSS::getSpeed() {
+float GNSS::getSpeed()
+{
   return _gnss.getGroundSpeed() / 1000.0;
 }
 
-
-float GNSS::getAccuracy() {
+float GNSS::getAccuracy()
+{
   return _gnss.getHorizontalAccEst() / 1000.0;
 }
 
-
-uint32_t GNSS::getUnixEpoch() {
+uint32_t GNSS::getUnixEpoch()
+{
   return _gnss.getUnixEpoch();
 }
 
-
-void GNSS::print() {
+void GNSS::print()
+{
   Serial.print(isFixed());
   Serial.print("\t");
   Serial.print(getFixType());

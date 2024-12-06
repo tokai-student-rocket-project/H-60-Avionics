@@ -41,6 +41,7 @@ bool doLogging = false;
 bool isFalling;
 float altitude;
 bool isLaunchMode;
+bool isIgnition;
 float forceX_N;
 float jerkX_mps3;
 
@@ -165,7 +166,7 @@ void task100Hz()
   {
   case (Var::FlightMode::STANDBY):
   {
-    if (flightPin.isOpen() || isLaunchMode)
+    if (flightPin.isOpen() || isLaunchMode || isIgnition)
     {
       flightModeOn();
       // Serial.println("WKUP");
@@ -270,7 +271,9 @@ void task100Hz()
 
   doLogging = newDoLogging;
   ledWork.set(doLogging);
-  Serial.println(flightMode.currentNumber());
+
+  // フライトモードの表示
+  // Serial.println(flightMode.currentNumber());
 
   const auto &logPacket = MsgPacketizer::encode(0x0A,
                                                 ident, millis(), flightTime.get(), flightMode.currentNumber(), logger.getUsage(),
@@ -290,6 +293,10 @@ void task10Hz()
 {
   can.sendFlight(flightMode.currentNumber(), flightTime.get(), doLogging, ident);
   ledCanTx.toggle();
+
+  // Serial.print(gnss.getLatitude(), 8);    // GNSSのテスト用
+  // Serial.print(",");                      // GNSSのテスト用
+  // Serial.println(gnss.getLongitude(), 8); // GNSSのテスト用
 }
 
 void task2Hz()
@@ -431,6 +438,13 @@ void loop()
     case Var::Label::VALVE_MODE:
     {
       can.receiveValveMode(&isLaunchMode);
+      ledCanRx.toggle();
+
+      break;
+    }
+    case Var::Label::GSE_SIGNAL:
+    {
+      can.receiveIgnition(&isIgnition);
       ledCanRx.toggle();
 
       break;

@@ -107,104 +107,62 @@ void RS405CB::move(unsigned char *id, int angle, int speed)
     digitalWrite(_enablePin, LOW);
 }
 
-// uint16_t RS405CB::getCurrentposition(byte *id)
-// {
-//     unsigned char txData[8];
-//     uint8_t rxData[100];
-//     unsigned char CheckSum = 0;
-//     uint32_t offset = 0;
-//     // uint32_t readBytes;
+int16_t RS405CB::readCurrentposition(unsigned char *id)
+{
+    unsigned char txData[8];
+    unsigned char CheckSum = 0;
+    uint8_t rxData[26];
+    int rxIndex = 0;
+    int16_t currentPosition;
+    uint8_t dataByte = 0;
+    const int packetSize = 26;
+    unsigned long timeout = 1000;
+    unsigned long startTime = 0;
 
-//     txData[0] = 0xFA; // HEADER
-//     txData[1] = 0xAF; // HEADER
-//     txData[2] = id;   // ID
-//     txData[3] = 0x09; // FLAGS
-//     txData[4] = 0x00; // ADDRESS
-//     txData[5] = 0x00; // LENGTH
-//     txData[6] = 0x01; // COUNT
-//     // TxData[7] = 0x00; // SUM
-//     for (int i = 2; i <= 6; i++)
-//     {
-//         CheckSum = CheckSum ^ txData[i];
-//     }
-//     txData[7] = CheckSum;
-//     Serial.print("\e[4;1H");
-//     Serial.print("\e[0K");
-//     Serial.print("CheckSum: ");
-//     Serial.println(txData[7]);
 
-//     // Serial1.flush();
-//     digitalWrite(_enablePin, HIGH);
-//     for (uint8_t i = 0; i <= 8; i++)
-//     {
-//         Serial1.write(txData[i]);
-//     }
-//     Serial1.flush();
-
-//     while (Serial1.available() > 0)
-//     {
-//         uint8_t data = Serial1.read();
-//         if (data == 0xFD)
-//         {
-//             Serial.println("パケット完成したよ．");
-//             // offset = 0;
-//         }
-//         rxData[offset] = data;
-//         offset++;
-//         Serial.print("\e[2;1H");
-//         Serial.print("\e[0K");
-//         Serial.print(rxData[0], HEX);
-
-//         Serial.print("\e[2;4H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[1], HEX);
-
-//         Serial.print("\e[2;7H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[2], HEX);
-
-//         Serial.print("\e[2;10H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[3], HEX);
-
-//         Serial.print("\e[2;13H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[4], HEX);
-
-//         Serial.print("\e[2;16H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[5], HEX);
-
-//         Serial.print("\e[2;19H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[6], HEX);
-
-//         Serial.print("\e[2;22H");
-//         Serial.print("\e[0K");
-//         Serial.println(rxData[7], HEX);
-
-//         Serial.print("\e[3;1H");
-//         Serial.print("\e[0K");
-//         Serial.println(offset);
-//     }
-//     digitalWrite(_enablePin, LOW);
-
-//     return rxData;
-// }
-
-// TO DO
-/*
-uint32_t offset = 0;
-uint8_t packet[1024];
-while (Serial1.available() > 0) {
-    uint8_t data = Serial1.read();
-    if (data == 0xFD) {
-        Serial.print("前のパケットが完成したよ");
-        // 前のパケットを使った処理
-        offset = 0;
+    txData[0] = 0xFA; // HEADER
+    txData[1] = 0xAF; // HEADER
+    txData[2] = id;   // ID
+    txData[3] = 0x09; // FLAGS
+    txData[4] = 0x00; // ADDRESS
+    txData[5] = 0x00; // LENGTH
+    txData[6] = 0x01; // COUNT
+    for (int i = 2; i <= 6; i++)
     {
-    packet[offset] = data;
-    offset++;
+        CheckSum = CheckSum ^ txData[i];
     }
+    txData[7] = CheckSum;
+
+    digitalWrite(_enablePin, HIGH); // パケット送信
+    for (uint8_t i = 0; i <= 8; i++)
+    {
+        Serial1.write(txData[i]);
+    }
+    Serial1.flush();
+    digitalWrite(_enablePin, LOW); // パケット送信完了
+
+    startTime = millis();
+    while((millis() - startTime) < timeout)
+    {
+        if(Serial1.available())
+        {
+            uint8_t readByte = Serial1.read();
+
+            if (rxIndex == 0 && readByte == 0xDF){
+                rxData[rxIndex] = readByte;
+                rxIndex++;
+            }
+            else if (rxIndex > 0 && rxIndex < 26) {
+                rxData[rxIndex] = readByte;
+                rxIndex++;
+
+                if (rxIndex == packetSize)
+                {
+                    currentPosition = (rxData[8] << 8) | rxData[7];
+                    return currentPosition / 10;
+                }
+            }
+        }
+    }
+    return 255;
 }
-*/

@@ -226,4 +226,6 @@ void setup()
 void loop()
 {
   Tasks.update();
+
+  Serial.println(supplyValve.readCurrentposition(1));
 }

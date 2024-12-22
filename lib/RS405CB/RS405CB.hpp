@@ -11,7 +11,7 @@ class RS405CB
         void torqueOn(unsigned char* id);
         void torqueOff(unsigned char *id);
         void move(unsigned char* id, int angle, int speed);
-        uint16_t getCurrentposition(unsigned char *id);
+        int16_t readCurrentposition(unsigned char *id);
 
     private:
         uint8_t _enablePin;

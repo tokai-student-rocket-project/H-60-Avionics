@@ -49,9 +49,9 @@ int B3MSC1170A::writeCommand(byte* id, byte* TxData, byte* Address)
     }
 
     // Serial.print("rx: ");
-    for (int o = 0; o < 7; o++)
+    for (int o = 0; o < 5; o++)
     {
-        rxCmd[7] += rxCmd[o];
+        rxCmd[5] += rxCmd[o];
         // Serial.print(rxCmd[o]);
         // Serial.print("|");
     }

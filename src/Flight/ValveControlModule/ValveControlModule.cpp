@@ -211,8 +211,9 @@ void sendValveData()
 
 void readData()
 {
-  float temperature = supplyValve.readTemperature(1);
-  Serial.println(temperature);
+  Serial.println(supplyValve.readTemperature(1));
+
+  Serial.println(supplyValve.readVoltage(1));
 }
 
 void setup()

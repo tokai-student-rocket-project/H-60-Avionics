@@ -52,6 +52,9 @@ void setup() {
                                int16_t mcuTemperature,
                                uint16_t inputVoltage,
                                int16_t currentPosition,
+                               int16_t currentSupplyPosition,
+                               int16_t temprature,
+                               int16_t voltage,
                                int16_t currentDesiredPosition,
                                uint16_t separation1ProtectionTime,
                                uint16_t separation1ForceTime,
@@ -93,6 +96,9 @@ void setup() {
                              packet["valve"]["inputVoltage_V"] = (float)inputVoltage / 1000.0;
                              packet["valve"]["currentPosition_deg"] = (float)currentPosition / 100.0;
                              packet["valve"]["currentDesiredPosition_deg"] = (float)currentDesiredPosition / 100.0;
+                             packet["valve"]["currentSupplyPosition_deg"] = (float)currentSupplyPosition / 10.0;
+                             packet["valve"]["temprature"] = (float)(temprature);
+                             packet["valve"]["voltage"] = (float)voltage / 100;
 
                              packet["timer"]["separation_1_protection_time"] = (float)separation1ProtectionTime / 1000.0;
                              packet["timer"]["separation_1_force_time"] = (float)separation1ForceTime / 1000.0;

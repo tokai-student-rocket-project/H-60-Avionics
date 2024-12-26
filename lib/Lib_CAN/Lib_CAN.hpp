@@ -34,6 +34,9 @@ public:
   void sendValveDataPart2(int16_t currentPosition, int16_t currentDesiredPosition, int16_t currentVelocity);
   void receiveValveDataPart2(float *currentPosition, float *currentDesiredPosition, float *currentVelocity);
 
+  void sendValveDataPart3(int16_t currentPosition, int16_t temperature, int16_t voltage);
+  void receiveValveDataPart3(float *currentPosition, float *temprature, float *voltage);
+
   void sendDynamics(float force, float jerk);
   void receiveDynamics(float *force, float *jerk);
 

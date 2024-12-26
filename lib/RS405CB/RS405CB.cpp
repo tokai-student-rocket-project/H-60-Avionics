@@ -146,7 +146,7 @@ int16_t RS405CB::readTime(unsigned char *id)
     return currentPosition;
 }
 
-int16_t RS405CB::readTemplature(unsigned char *id)
+int16_t RS405CB::readTemprature(unsigned char *id)
 {
     unsigned char txData[8];
     unsigned char checkSum = 0;

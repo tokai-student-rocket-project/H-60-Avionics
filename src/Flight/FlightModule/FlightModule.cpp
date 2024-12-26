@@ -58,6 +58,7 @@ float accuracy;
 
 float motorTemperature, mcuTemperature, current, inputVoltage;
 float currentPosition, currentDesiredPosition, currentVelocity;
+float currentSupplyPosition, temprature, voltage;
 
 bool sensingModuleAvailable = false;
 bool sensingModuleAvailableAnnounced = false;
@@ -327,11 +328,16 @@ void task2Hz()
                                                       static_cast<uint16_t>(inputVoltage * 1000),
                                                       static_cast<int16_t>(currentPosition * 100),
                                                       static_cast<int16_t>(currentDesiredPosition * 100),
+                                                      static_cast<int16_t>(currentSupplyPosition * 10),
+                                                      static_cast<int16_t>(temprature),
+                                                      static_cast<int16_t>(voltage * 100),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_1_PROTECTION_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_1_FORCE_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_2_PROTECTION_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_2_FORCE_TIME),
-                                                      static_cast<uint16_t>(flightTime.LANDING_TIME));
+                                                      static_cast<uint16_t>(flightTime.LANDING_TIME)
+                                                      
+                                                      );
 
   telemeter.reserveData(telemetryPacket.data.data(), telemetryPacket.data.size());
   telemeter.sendReservedData();
@@ -469,6 +475,14 @@ void loop()
     case Var::Label::VALVE_DATA_PART_2:
     {
       can.receiveValveDataPart2(&currentPosition, &currentDesiredPosition, &currentVelocity);
+      ledCanRx.toggle();
+
+      break;
+    }
+
+    case Var::Label::VALVE_DATA_PART_3:
+    {
+      can.receiveValveDataPart3(&currentSupplyPosition, &temprature, &voltage);
       ledCanRx.toggle();
 
       break;

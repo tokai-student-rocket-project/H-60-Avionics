@@ -202,34 +202,11 @@ void sendValveData()
       mainValve.readCurrentPosition(0x01),
       mainValve.readDesiredPosition(0x01),
       mainValve.readCurrentVelosity(0x01));
-}
-
-void readData()
-{
-  int16_t position = supplyValve.readPosition(1) / 10;
-  Serial.print("Position: ");
-  Serial.print(position); 
-  Serial.println(" deg");
-
-  int16_t time = supplyValve.readTime(1) * 10;
-  Serial.print("time: ");
-  Serial.print(time);
-  Serial.println(" ms");
-
-  int templature = supplyValve.readTemplature(1);
-  Serial.print("Templature: ");
-  Serial.print(templature);
-  Serial.println(" C");
-
-  float voltage = supplyValve.readVoltage(1) / 100;
-  Serial.print("Voltage: ");
-  Serial.print(voltage);
-  Serial.println(" V");
-
-  float load = supplyValve.readLoad(1);
-  Serial.print("Load: ");
-  Serial.print(load);
-  Serial.println(" mA");
+  
+  can.sendValveDataPart3(
+      supplyValve.readPosition(1),
+      supplyValve.readTemprature(1),
+      supplyValve.readVoltage(1));
 }
 
 void setup()
@@ -248,7 +225,6 @@ void setup()
   Tasks.add(&sendValveMode)->startFps(60);
   Tasks.add(&sendIgnition)->startFps(60);
   Tasks.add(&sendValveData)->startFps(10);
-  Tasks.add(&readData)->startFps(10);
 
   changeMode(Var::ValveMode::WAITING);
   changeIgnition(Var::GseSignal::IGNITION_OFF);

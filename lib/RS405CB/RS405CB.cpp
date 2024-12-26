@@ -125,7 +125,7 @@ int16_t RS405CB::readTime(unsigned char *id)
     unsigned char txData[8];
     unsigned char checkSum = 0;
     byte rxData[9];
-    int16_t currentPosition = 0;
+    int16_t currentTime = 0;
 
     txData[0] = 0xFA; // HEADER
     txData[1] = 0xAF; // HEADER
@@ -142,16 +142,16 @@ int16_t RS405CB::readTime(unsigned char *id)
 
     _subSupply->synchronize(txData, 8, rxData, 9);
 
-    currentPosition = (rxData[8] << 8) | rxData[7];
-    return currentPosition;
+    currentTime = (rxData[8] << 8) | rxData[7];
+    return currentTime;
 }
 
-int16_t RS405CB::readTemprature(unsigned char *id)
+int16_t RS405CB::readTemperature(unsigned char *id)
 {
     unsigned char txData[8];
     unsigned char checkSum = 0;
     byte rxData[9];
-    int16_t currentTemplature = 0;
+    int16_t currentTemperature = 0;
 
     txData[0] = 0xFA; // HEADER
     txData[1] = 0xAF; // HEADER
@@ -168,8 +168,8 @@ int16_t RS405CB::readTemprature(unsigned char *id)
 
     _subSupply->synchronize(txData, 8, rxData, 9);
 
-    currentTemplature = (rxData[8] << 8) | rxData[7];
-    return currentTemplature;
+    currentTemperature = (rxData[8] << 8) | rxData[7];
+    return currentTemperature;
 }
 
 int16_t RS405CB::readVoltage(unsigned char *id)
@@ -177,7 +177,7 @@ int16_t RS405CB::readVoltage(unsigned char *id)
     unsigned char txData[8];
     unsigned char checkSum = 0;
     byte rxData[9];
-    int16_t currentTemplature = 0;
+    int16_t currentVoltage = 0;
 
     txData[0] = 0xFA; // HEADER
     txData[1] = 0xAF; // HEADER
@@ -194,8 +194,8 @@ int16_t RS405CB::readVoltage(unsigned char *id)
 
     _subSupply->synchronize(txData, 8, rxData, 9);
 
-    currentTemplature = (rxData[8] << 8) | rxData[7];
-    return currentTemplature;
+    currentVoltage = (rxData[8] << 8) | rxData[7];
+    return currentVoltage;
 }
 
 int16_t RS405CB::readLoad(unsigned char *id)

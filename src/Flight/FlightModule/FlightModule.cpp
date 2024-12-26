@@ -58,7 +58,7 @@ float accuracy;
 
 float motorTemperature, mcuTemperature, current, inputVoltage;
 float currentPosition, currentDesiredPosition, currentVelocity;
-float currentSupplyPosition, temprature, voltage;
+float currentSupplyPosition, temperature, voltage;
 
 bool sensingModuleAvailable = false;
 bool sensingModuleAvailableAnnounced = false;
@@ -329,7 +329,7 @@ void task2Hz()
                                                       static_cast<int16_t>(currentPosition * 100),
                                                       static_cast<int16_t>(currentDesiredPosition * 100),
                                                       static_cast<int16_t>(currentSupplyPosition * 10),
-                                                      static_cast<int16_t>(temprature),
+                                                      static_cast<int16_t>(temperature * 10),
                                                       static_cast<int16_t>(voltage * 100),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_1_PROTECTION_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_1_FORCE_TIME),
@@ -482,7 +482,7 @@ void loop()
 
     case Var::Label::VALVE_DATA_PART_3:
     {
-      can.receiveValveDataPart3(&currentSupplyPosition, &temprature, &voltage);
+      can.receiveValveDataPart3(&currentSupplyPosition, &temperature, &voltage);
       ledCanRx.toggle();
 
       break;

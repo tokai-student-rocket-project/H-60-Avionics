@@ -205,8 +205,14 @@ void sendValveData()
   
   can.sendValveDataPart3(
       supplyValve.readPosition(1),
-      supplyValve.readTemprature(1),
+      supplyValve.readTemperature(1),
       supplyValve.readVoltage(1));
+}
+
+void readData()
+{
+  float temperature = supplyValve.readTemperature(1);
+  Serial.println(temperature);
 }
 
 void setup()
@@ -225,6 +231,7 @@ void setup()
   Tasks.add(&sendValveMode)->startFps(60);
   Tasks.add(&sendIgnition)->startFps(60);
   Tasks.add(&sendValveData)->startFps(10);
+  Tasks.add(&readData)->startFps(10);
 
   changeMode(Var::ValveMode::WAITING);
   changeIgnition(Var::GseSignal::IGNITION_OFF);

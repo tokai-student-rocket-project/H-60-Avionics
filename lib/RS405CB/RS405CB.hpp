@@ -13,7 +13,7 @@ class RS405CB
         bool move(unsigned char* id, int angle, int speed);
         int16_t readPosition(unsigned char *id);
         int16_t readTime(unsigned char *id);
-        int16_t readTemprature(unsigned char *id);
+        int16_t readTemperature(unsigned char *id);
         int16_t readVoltage(unsigned char *id);
         int16_t readLoad(unsigned char *id);
 

@@ -128,7 +128,7 @@ void task100Hz()
   if (flightMode.isNot(Var::FlightMode::STANDBY) && flightMode.isNot(Var::FlightMode::READY_TO_FLY) && flightPin.isClosed())
   {
     flightModeReset();
-    // Serial.println("REST");
+    Serial.println("REST");
   }
 
   // announce force sep1
@@ -144,7 +144,7 @@ void task100Hz()
     flightMode.change(Var::FlightMode::DROGUE_CHUTE_DESCENT);
     sn3.separate();
     buzzer.beepTwice();
-    // Serial.println("SEP1(F)");
+    Serial.println("SEP1(F)");
   }
 
   // announce force sep2
@@ -160,7 +160,7 @@ void task100Hz()
     flightMode.change(Var::FlightMode::MAIN_CHUTE_DESCENT);
     sn4.separate();
     buzzer.beepTwice();
-    // Serial.println("SEP2(F)");
+    Serial.println("SEP2(F)");
   }
 
   switch (flightMode.current())
@@ -170,7 +170,7 @@ void task100Hz()
     if (flightPin.isOpen() || isLaunchMode || isIgnition)
     {
       flightModeOn();
-      // Serial.println("WKUP");
+      Serial.println("WKUP");
     }
 
     break;
@@ -183,7 +183,7 @@ void task100Hz()
       flightMode.change(Var::FlightMode::POWERED_CLIMB);
       flightTime.setZero();
       buzzer.beepOnce();
-      // Serial.println("IGNT");
+      Serial.println("IGNT");
     }
 
     break;
@@ -194,7 +194,7 @@ void task100Hz()
     if (flightTime.isElapsed(1000) && forceX_N < 0 && jerkX_mps3 < 0)
     {
       flightMode.change(Var::FlightMode::FREE_CLIMB);
-      // Serial.println("BOUT");
+      Serial.println("BOUT");
     }
 
     break;
@@ -205,7 +205,7 @@ void task100Hz()
     if (isFalling)
     {
       flightMode.change(Var::FlightMode::FREE_DESCENT);
-      // Serial.println("APOG");
+      Serial.println("APOG");
     }
 
     break;
@@ -218,7 +218,7 @@ void task100Hz()
       flightMode.change(Var::FlightMode::DROGUE_CHUTE_DESCENT);
       sn3.separate();
       buzzer.beepTwice();
-      // Serial.println("SEP1");
+      Serial.println("SEP1");
     }
 
     break;
@@ -231,7 +231,7 @@ void task100Hz()
       flightMode.change(Var::FlightMode::MAIN_CHUTE_DESCENT);
       sn4.separate();
       buzzer.beepTwice();
-      // Serial.println("SEP2");
+      Serial.println("SEP2");
     }
 
     break;
@@ -243,7 +243,7 @@ void task100Hz()
     {
       flightMode.change(Var::FlightMode::LANDED);
       buzzer.beepLongThreeTimes();
-      // Serial.println("LAND");
+      Serial.println("LAND");
     }
 
     break;
@@ -255,7 +255,7 @@ void task100Hz()
     {
       flightMode.change(Var::FlightMode::SHUTDOWN);
       buzzer.beepEndless();
-      // Serial.println("SDWN");
+      Serial.println("SDWN");
     }
 
     break;
@@ -485,8 +485,8 @@ void loop()
     {
       can.receiveValveDataPart3(&currentSupplyPosition, &temperature, &voltage);
       ledCanRx.toggle();
-      Serial.println(temperature);
-      Serial.println(voltage);
+      // Serial.println(temperature); // 確認用
+      // Serial.println(voltage); // 確認用
 
       break;
     }

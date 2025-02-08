@@ -9,6 +9,11 @@
 #include "B3MSC1170A.hpp"
 #include "RS405CB.hpp"
 
+char ident = '\0';
+bool doLogging = false;
+uint8_t flightMode = 0;
+uint16_t flightTime = 0;
+
 CAN can(6);
 
 OutputPin ledWork(A7);
@@ -142,42 +147,137 @@ void changeIgnition(Var::GseSignal nextMode)
     return;
   if (nextMode == Var::GseSignal::IGNITION_ON)
   {
-    Serial.println("Hello");
+    buzzer.beepLongOnce();
   }
 
   if (nextMode == Var::GseSignal::IGNITION_OFF)
   {
-    Serial.println("Arduino");
+    buzzer.beepTwice();
   }
+
   currentGseSignal = nextMode;
 }
 
-void processSignal()
+void syncFlightMode()
 {
-  ledWork.toggle();
-
-  igniterSignalCounter.update(gseIgniter.isSignaled());
-  valveSignalCounter.update(gseValve.isSignaled());
-
-  if (igniterSignalCounter.isExceeded())
+  if (can.available())
   {
-    changeIgnition(Var::GseSignal::IGNITION_ON);
-  }
-  else
-  {
-    changeIgnition(Var::GseSignal::IGNITION_OFF);
-  }
+    switch (can.getLatestLabel())
+    {
+    case Var::Label::FLIGHT_DATA:
+    {
+      can.receiveFlight(&flightMode, &flightTime, &doLogging, &ident);
+      switch (flightMode) {
+        case (0): // STANDBY
+        {
+          igniterSignalCounter.update(gseIgniter.isSignaled());
 
-  if (valveSignalCounter.isExceeded())
-  {
-    changeMode(Var::ValveMode::LAUNCH);
-  }
-  else
-  {
-    changeMode(Var::ValveMode::WAITING);
-  }
+          if (igniterSignalCounter.isExceeded())
+          {
+            changeIgnition(Var::GseSignal::IGNITION_ON);
+          }
+          else
+          {
+            changeIgnition(Var::GseSignal::IGNITION_OFF);
+          }
 
-  verifyValve();
+          valveSignalCounter.update(gseValve.isSignaled());
+          if (valveSignalCounter.isExceeded())
+          {
+            changeMode(Var::ValveMode::LAUNCH);
+          }
+          else
+          {
+            changeMode(Var::ValveMode::WAITING);
+          }
+          verifyValve();
+
+          Serial.println("STANDBY");
+          break;
+        }
+
+        case (1): // READY_TO_FLY
+        {
+          igniterSignalCounter.update(gseIgniter.isSignaled());
+
+          if (igniterSignalCounter.isExceeded())
+          {
+            changeIgnition(Var::GseSignal::IGNITION_ON);
+          }
+          else
+          {
+            changeIgnition(Var::GseSignal::IGNITION_OFF);
+          }
+
+          valveSignalCounter.update(gseValve.isSignaled());
+          if (valveSignalCounter.isExceeded())
+          {
+            changeMode(Var::ValveMode::LAUNCH);
+          }
+          else
+          {
+            changeMode(Var::ValveMode::WAITING);
+          }
+          verifyValve();
+
+          Serial.println("READY_TO_FLY");
+          break;
+        }
+
+        case (2): // POWERED_CLIMB
+        {
+          changeMode(Var::ValveMode::LAUNCH);
+          Serial.println("POWERED_CLIMB");
+          break;
+        }
+
+        case (3): // FREE_CLIMB
+        {
+          changeMode(Var::ValveMode::LAUNCH);
+          Serial.println("FREE_CLIMB");
+          break;
+        }
+
+        case (4): // FREE_DESCENT
+        {
+          changeMode(Var::ValveMode::LAUNCH);
+          Serial.println("FREE_DESCENT");
+          break;
+        }
+
+        case (5): // DROGUE_CHUTE_DESCENT
+        {
+          changeMode(Var::ValveMode::LAUNCH);
+          Serial.println("DROGUE_CHUTE_DESCENT");
+          break;
+        }
+
+        case (6): // MAIN_CHUTE_DESCENT
+        {
+          changeMode(Var::ValveMode::LAUNCH);
+          Serial.println("MAIN_CHUTE_DESCENT");
+          break;
+        }
+
+        case (7): // LANDED
+        {
+          changeMode(Var::ValveMode::WAITING); // or WAITING
+          Serial.println("LANDED");
+          break;
+        }
+
+        case (8): // SHUTDOWN
+        {
+          changeMode(Var::ValveMode::WAITING); // or WAITING
+          supplyValve.torqueOn(0);
+          mainValve.torqueOff(0x01);
+          Serial.println("SHUTDOWN");
+          break;
+        }
+      }
+    }
+    }
+  }
 }
 
 void sendValveMode()
@@ -211,9 +311,7 @@ void sendValveData()
 
 void readData()
 {
-  Serial.println(supplyValve.readTemperature(1));
-
-  Serial.println(supplyValve.readVoltage(1));
+  Serial.println(supplyValve.readPosition(1));
 }
 
 void setup()
@@ -228,7 +326,7 @@ void setup()
   supplyValve.torqueOn(1);
   mainValve.initialize();
 
-  Tasks.add(&processSignal)->startFps(100);
+  Tasks.add(&syncFlightMode)->startFps(100);
   Tasks.add(&sendValveMode)->startFps(60);
   Tasks.add(&sendIgnition)->startFps(60);
   Tasks.add(&sendValveData)->startFps(10);

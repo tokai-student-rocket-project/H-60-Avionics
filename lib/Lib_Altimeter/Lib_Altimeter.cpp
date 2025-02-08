@@ -26,6 +26,7 @@ float Altimeter::getTemperature() {
 
 void Altimeter::setReferencePressure() {
   setReferencePressure(getPressure());
+  // Serial.println(getPressure();)
 }
 
 
@@ -35,6 +36,7 @@ void Altimeter::setReferencePressure(float referencePressure_kPa) {
 
 
 float Altimeter::getAltitude(float temperature_K) {
+  // float altitude_m = (((pow((100.68 / _pressure_kPa), (1.0 / 5.257))) - 1.0) * temperature_K) / 0.0065;
   float altitude_m = (((pow((_referencePressure_kPa / _pressure_kPa), (1.0 / 5.257))) - 1.0) * temperature_K) / 0.0065;
   return altitude_m;
 }

@@ -138,6 +138,15 @@ void task50Hz()
   temperatureOutside_degC = outside.getTemperature_degC();
   pressure_kPa = altimeter.getPressure();
   altitude_m = altimeter.getAltitude(temperatureOutside_degC + 273.15);
+
+  /*
+  ////////////////////////// Teleplot出力
+  Serial.print(">pressure:");
+  Serial.println(pressure_kPa);
+  Serial.print(">alti:");
+  Serial.println(altitude_m);
+  //////////////////////////
+  */
 }
 
 void task20Hz()
@@ -262,7 +271,7 @@ void setup()
 void loop()
 {
   Tasks.update();
-
+  
   if (can.available())
   {
     switch (can.getLatestLabel())

@@ -124,6 +124,7 @@ void loop()
   {
     char command = Serial.read();
 
+    // F: フライトモードオン
     if (command == 'F')
     {
       const auto &packet = MsgPacketizer::encode(0xF1, (uint8_t)0);
@@ -132,13 +133,15 @@ void loop()
       LoRa.endPacket();
     }
 
-
+    // R: フライトモードリセット
     if (command == 'R') {
       const auto& packet = MsgPacketizer::encode(0xF2, (uint8_t)0);
       LoRa.beginPacket();
       LoRa.write(packet.data.data(), packet.data.size());
       LoRa.endPacket();
     }
+
+    // C: タイマー設定
     if (command == 'C') {
       const auto& packet = MsgPacketizer::encode(0xF3, separation1ProtectionTime, separation1ForceTime, separation2ProtectionTime, separation2ForceTime, landingTime);
       LoRa.beginPacket();
@@ -146,7 +149,6 @@ void loop()
       LoRa.endPacket();
     }
   }
-
 
   if (LoRa.parsePacket()) {
     MsgPacketizer::parse();

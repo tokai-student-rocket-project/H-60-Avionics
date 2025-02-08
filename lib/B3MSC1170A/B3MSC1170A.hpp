@@ -8,6 +8,7 @@ class B3MSC1170A
 {
 public:
     void initialize();
+    void torqueOff(byte *id);
 
     int writeCommand(byte *id, byte *TxData, byte *Address);
     int setPosition(byte *id, int Pos, int Time);

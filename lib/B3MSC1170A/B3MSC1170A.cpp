@@ -12,6 +12,11 @@ void B3MSC1170A::initialize()
     writeCommand(0x01, 0x00, 0x28);
 }
 
+void B3MSC1170A::torqueOff(byte* id)
+{
+    writeCommand(id, 0x02, 0x28);
+}
+
 int B3MSC1170A::writeCommand(byte* id, byte* TxData, byte* Address)
 {
     byte txCmd[8];

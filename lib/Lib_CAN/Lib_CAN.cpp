@@ -52,7 +52,7 @@ void CAN::sendTrajectory(bool isFalling, float altitude)
 {
   uint8_t data[5];
   data[0] = isFalling;
-  memcpy(data + 4, &altitude, 4);
+  memcpy(data + 1, &altitude, 4);
 
   _can->sendMsgBuf(static_cast<uint32_t>(Var::Label::TRAJECTORY_DATA), 0, 5, data);
 }
@@ -60,7 +60,7 @@ void CAN::sendTrajectory(bool isFalling, float altitude)
 void CAN::receiveTrajectory(bool *isFalling, float *altitude)
 {
   *isFalling = _latestData[0];
-  memcpy(altitude, _latestData + 4, 4);
+  memcpy(altitude, _latestData + 1, 4);
 }
 
 void CAN::receiveSutegomaTemperature(float *ventPortTemperature, float *tankAtmosphereTemperature)

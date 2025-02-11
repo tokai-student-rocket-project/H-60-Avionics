@@ -57,8 +57,8 @@ float temperatureRegulator1_degC, temperatureRegulator2_degC, temperatureRegulat
 float temperatureOutside_degC, temperatureInside_degC;
 
 float temperatureVentPort_degC, temperatureTankAtmosphere_degC;
-uint32_t sutegomaTime_ms;
-float sutegomeTaskRate_Hz;
+// uint32_t sutegomaTime_ms;
+// float sutegomeTaskRate_Hz;
 
 float pressure_kPa;
 float altitude_m;
@@ -122,8 +122,8 @@ void task100Hz()
                                                 groundPower_mW, batteryPower_mW, tiePower_mW, busPower_mW,
                                                 temperatureRegulator1_degC, temperatureRegulator2_degC, temperatureRegulator3_degC, temperatureConduction_degC,
                                                 temperatureOutside_degC, temperatureInside_degC,
-                                                temperatureVentPort_degC, temperatureTankAtmosphere_degC,
-                                                sutegomaTime_ms, sutegomeTaskRate_Hz);
+                                                temperatureVentPort_degC, temperatureTankAtmosphere_degC
+                                                );
 
   if (doLogging)
   {
@@ -233,9 +233,8 @@ void task2Hz()
                                                          static_cast<int16_t>(temperatureOutside_degC * 10),
                                                          static_cast<int16_t>(temperatureInside_degC * 10),
                                                          static_cast<int16_t>(temperatureVentPort_degC * 10),
-                                                         static_cast<int16_t>(temperatureTankAtmosphere_degC * 10),
-                                                         static_cast<uint32_t>(sutegomaTime_ms),
-                                                         static_cast<int16_t>(sutegomeTaskRate_Hz * 10));
+                                                         static_cast<int16_t>(temperatureTankAtmosphere_degC * 10)
+                                                         );
 
   telemeter.reserveData(airTelemetryPacket.data.data(), airTelemetryPacket.data.size());
   telemeter.sendReservedData();
@@ -302,6 +301,7 @@ void loop()
       break;
     }
 
+    /*
     case Var::Label::SUTEGOMA_TEMPERATURE:
     {
       can.receiveSutegomaTemperature(&temperatureVentPort_degC, &temperatureTankAtmosphere_degC);
@@ -309,7 +309,9 @@ void loop()
 
       break;
     }
+    */
 
+    /*
     case Var::Label::SUTEGOMA_PERFORMANCE:
     {
       can.receiveSutegomaPerformance(&sutegomaTime_ms, &sutegomeTaskRate_Hz);
@@ -317,6 +319,7 @@ void loop()
 
       break;
     }
+    */
     }
   }
 }

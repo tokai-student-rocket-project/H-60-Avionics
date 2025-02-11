@@ -35,115 +35,110 @@ void dump(FRAM *fram)
 
 void printHeader()
 {
-  Serial.print("ident");
-  Serial.print(",");
-  Serial.print("millis");
-  Serial.print(",");
-  Serial.print("flightTime");
-  Serial.print(",");
-  Serial.print("flightMode");
-  Serial.print(",");
-  Serial.print("loggerUsage");
-  Serial.print(",");
+  Serial.print(F("ident"));
+  Serial.print(F(","));
+  Serial.print(F("millis"));
+  Serial.print(F(","));
+  Serial.print(F("flightTime"));
+  Serial.print(F(","));
+  Serial.print(F("flightMode"));
+  Serial.print(F(","));
+  Serial.print(F("loggerUsage"));
+  Serial.print(F(","));
 
-  Serial.print("accelerationX_mps2");
-  Serial.print(",");
-  Serial.print("accelerationY_mps2");
-  Serial.print(",");
-  Serial.print("accelerationZ_mps2");
-  Serial.print(",");
+  Serial.print(F("accelerationX_mps2"));
+  Serial.print(F(","));
+  Serial.print(F("accelerationY_mps2"));
+  Serial.print(F(","));
+  Serial.print(F("accelerationZ_mps2"));
+  Serial.print(F(","));
 
-  Serial.print("gyroscopeX_dps");
-  Serial.print(",");
-  Serial.print("gyroscopeY_dps");
-  Serial.print(",");
-  Serial.print("gyroscopeZ_dps");
-  Serial.print(",");
+  Serial.print(F("gyroscopeX_dps"));
+  Serial.print(F(","));
+  Serial.print(F("gyroscopeY_dps"));
+  Serial.print(F(","));
+  Serial.print(F("gyroscopeZ_dps"));
+  Serial.print(F(","));
 
-  Serial.print("magnetometerX_nT");
-  Serial.print(",");
-  Serial.print("magnetometerY_nT");
-  Serial.print(",");
-  Serial.print("magnetometerZ_nT");
-  Serial.print(",");
+  Serial.print(F("magnetometerX_nT"));
+  Serial.print(F(","));
+  Serial.print(F("magnetometerY_nT"));
+  Serial.print(F(","));
+  Serial.print(F("magnetometerZ_nT"));
+  Serial.print(F(","));
 
-  Serial.print("roll_deg");
-  Serial.print(",");
-  Serial.print("pitch_deg");
-  Serial.print(",");
-  Serial.print("yaw_deg");
-  Serial.print(",");
+  Serial.print(F("roll_deg"));
+  Serial.print(F(","));
+  Serial.print(F("pitch_deg"));
+  Serial.print(F(","));
+  Serial.print(F("yaw_deg"));
+  Serial.print(F(","));
 
-  Serial.print("forceX_N");
-  Serial.print(",");
-  Serial.print("jerkX_mps3");
-  Serial.print(",");
+  Serial.print(F("forceX_N"));
+  Serial.print(F(","));
+  Serial.print(F("jerkX_mps3"));
+  Serial.print(F(","));
 
-  Serial.print("pressure_kPa");
-  Serial.print(",");
-  Serial.print("altitude_m");
-  Serial.print(",");
-  Serial.print("verticalSpeed_mps");
-  Serial.print(",");
-  Serial.print("verticalAcceleration_msp2");
-  Serial.print(",");
-  Serial.print("estimated");
-  Serial.print(",");
-  Serial.print("apogee");
-  Serial.print(",");
-  Serial.print("isFalling");
-  Serial.print(",");
+  Serial.print(F("pressure_kPa"));
+  Serial.print(F(","));
+  Serial.print(F("altitude_m"));
+  Serial.print(F(","));
+  Serial.print(F("verticalSpeed_mps"));
+  Serial.print(F(","));
+  Serial.print(F("verticalAcceleration_msp2"));
+  Serial.print(F(","));
+  Serial.print(F("estimated"));
+  Serial.print(F(","));
+  Serial.print(F("apogee"));
+  Serial.print(F(","));
+  Serial.print(F("isFalling"));
+  Serial.print(F(","));
 
-  Serial.print("groundVoltage_V");
-  Serial.print(",");
-  Serial.print("batteryVoltage_V");
-  Serial.print(",");
-  Serial.print("tieVoltage_V");
-  Serial.print(",");
-  Serial.print("busVoltage_V");
-  Serial.print(",");
+  Serial.print(F("groundVoltage_V"));
+  Serial.print(F(","));
+  Serial.print(F("batteryVoltage_V"));
+  Serial.print(F(","));
+  Serial.print(F("tieVoltage_V"));
+  Serial.print(F(","));
+  Serial.print(F("busVoltage_V"));
+  Serial.print(F(","));
 
-  Serial.print("groundCurrent_mA");
-  Serial.print(",");
-  Serial.print("batteryCurrent_mA");
-  Serial.print(",");
-  Serial.print("tieCurrent_mA");
-  Serial.print(",");
-  Serial.print("busCurrent_mA");
-  Serial.print(",");
+  Serial.print(F("groundCurrent_mA"));
+  Serial.print(F(","));
+  Serial.print(F("batteryCurrent_mA"));
+  Serial.print(F(","));
+  Serial.print(F("tieCurrent_mA"));
+  Serial.print(F(","));
+  Serial.print(F("busCurrent_mA"));
+  Serial.print(F(","));
 
-  Serial.print("groundPower_mW");
-  Serial.print(",");
-  Serial.print("batteryPower_mW");
-  Serial.print(",");
-  Serial.print("tiePower_mW");
-  Serial.print(",");
-  Serial.print("busPower_mW");
-  Serial.print(",");
+  Serial.print(F("groundPower_mW"));
+  Serial.print(F(","));
+  Serial.print(F("batteryPower_mW"));
+  Serial.print(F(","));
+  Serial.print(F("tiePower_mW"));
+  Serial.print(F(","));
+  Serial.print(F("busPower_mW"));
+  Serial.print(F(","));
 
-  Serial.print("temperatureRegulator1_degC");
-  Serial.print(",");
-  Serial.print("temperatureRegulator2_degC");
-  Serial.print(",");
-  Serial.print("temperatureRegulator3_degC");
-  Serial.print(",");
-  Serial.print("temperatureConduction_degC");
-  Serial.print(",");
+  Serial.print(F("temperatureRegulator1_degC"));
+  Serial.print(F(","));
+  Serial.print(F("temperatureRegulator2_degC"));
+  Serial.print(F(","));
+  Serial.print(F("temperatureRegulator3_degC"));
+  Serial.print(F(","));
+  Serial.print(F("temperatureConduction_degC"));
+  Serial.print(F(","));
 
-  Serial.print("temperatureOutside_degC");
-  Serial.print(",");
-  Serial.print("temperatureInside_degC");
-  Serial.print(",");
+  Serial.print(F("temperatureOutside_degC"));
+  Serial.print(F(","));
+  Serial.print(F("temperatureInside_degC"));
+  Serial.print(F(","));
 
-  Serial.print("temperatureVentPort_degC");
-  Serial.print(",");
-  Serial.print("temperatureTankAtmosphere_degC");
-  Serial.print(",");
-
-  Serial.print("sutegomaTime_ms");
-  Serial.print(",");
-  Serial.print("sutegomeTaskRate_Hz");
-  Serial.print("\n");
+  Serial.print(F("temperatureVentPort_degC"));
+  Serial.print(F(","));
+  Serial.print(F("temperatureTankAtmosphere_degC"));
+  Serial.print(F("\n"));
 }
 
 void setup()
@@ -164,118 +159,113 @@ void setup()
                                       float groundPower_mW, float batteryPower_mW, float tiePower_mW, float busPower_mW,
                                       float temperatureRegulator1_degC, float temperatureRegulator2_degC, float temperatureRegulator3_degC, float temperatureConduction_degC,
                                       float temperatureOutside_degC, float temperatureInside_degC,
-                                      float temperatureVentPort_degC, float temperatureTankAtmosphere_degC,
-                                      float sutegomaTime_ms, float sutegomeTaskRate_Hz)
+                                      float temperatureVentPort_degC, float temperatureTankAtmosphere_degC
+                                      )
                                   {
                                     Serial.print(ident);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(millis);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(flightTime);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(flightMode);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(loggerUsage);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(accelerationX_mps2);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(accelerationY_mps2);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(accelerationZ_mps2);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(gyroscopeX_dps);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(gyroscopeY_dps);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(gyroscopeZ_dps);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(magnetometerX_nT);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(magnetometerY_nT);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(magnetometerZ_nT);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(roll_deg);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(pitch_deg);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(yaw_deg);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(forceX_N);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(jerkX_mps3);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(pressure_kPa);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(altitude_m);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(verticalSpeed_mps);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(verticalAcceleration_msp2);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(estimated);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(apogee);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(isFalling);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(groundVoltage_V);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(batteryVoltage_V);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(tieVoltage_V);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(busVoltage_V);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(groundCurrent_mA);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(batteryCurrent_mA);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(tieCurrent_mA);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(busCurrent_mA);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(groundPower_mW);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(batteryPower_mW);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(tiePower_mW);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(busPower_mW);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(temperatureRegulator1_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(temperatureRegulator2_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(temperatureRegulator3_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(temperatureConduction_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(temperatureOutside_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(temperatureInside_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
 
                                     Serial.print(temperatureVentPort_degC);
-                                    Serial.print(",");
+                                    Serial.print(F(","));
                                     Serial.print(temperatureTankAtmosphere_degC);
-                                    Serial.print(",");
-
-                                    Serial.print(sutegomaTime_ms);
-                                    Serial.print(",");
-                                    Serial.print(sutegomeTaskRate_Hz);
-                                    Serial.print("\n");
+                                    Serial.print(F("\n"));
                                   });
 
   while (!Serial)

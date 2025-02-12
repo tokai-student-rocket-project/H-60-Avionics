@@ -59,7 +59,7 @@ uint32_t Logger::getOffset() {
 
 
 float Logger::getUsage() {
-  return ((float)_offset / (float)(FRAM::LENGTH * 4)) * 100.0;
+  return ((float)_offset / (float)(FRAM::LENGTH * 1)) * 100.0;
 }
 
 

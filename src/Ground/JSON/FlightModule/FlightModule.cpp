@@ -12,8 +12,8 @@ StaticJsonDocument<4096> packet;
 
 uint16_t separation1ProtectionTime = 8232;
 uint16_t separation1ForceTime = 11232;
-uint16_t separation2ProtectionTime = 18232;
-uint16_t separation2ForceTime = 19232;
+uint16_t separation2ProtectionTime = 1; // 18232
+uint16_t separation2ForceTime = 1; // 19232
 uint16_t landingTime = 24832;
 
 
@@ -45,8 +45,8 @@ void setup() {
                                uint8_t satelliteCount,
                                float latitude,
                                float longitude,
-                               int16_t height,
-                               int16_t speed,
+                                int16_t height,
+                                int16_t speed,
                                uint16_t accuracy,
                                int16_t motorTemperature,
                                int16_t mcuTemperature,
@@ -55,7 +55,6 @@ void setup() {
                                int16_t currentDesiredPosition,
                                int16_t currentVelocity,
                                int16_t currentSupplyPosition,
-                               int16_t temperature,
                                int16_t voltage,
                                uint16_t separation1ProtectionTime,
                                uint16_t separation1ForceTime,
@@ -98,8 +97,7 @@ void setup() {
                              packet["valve"]["currentPosition_deg"] = (float)currentPosition / 100.0;
                              packet["valve"]["currentDesiredPosition_deg"] = (float)currentDesiredPosition / 100.0;
                              packet["valve"]["currentVelocity_degps"] = (float)currentVelocity / 100.0;
-                             packet["valve"]["currentSupplyPosition_deg"] = (float)currentSupplyPosition / 10.0;
-                             packet["valve"]["temperature"] = (float)temperature;
+                             packet["valve"]["currentSupplyPosition_deg"] = (float)currentSupplyPosition / 100.0;
                              packet["valve"]["voltage"] = (float)voltage / 100.0;
 
                              packet["timer"]["separation_1_protection_time"] = (float)separation1ProtectionTime / 1000.0;

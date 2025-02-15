@@ -150,26 +150,23 @@ void CAN::receiveValveDataPart2(float *currentPosition, float *currentDesiredPos
   *currentVelocity = (float)currentVelocityRaw / 100.0;
 }
 
-void CAN::sendValveDataPart3(int16_t currentPositionSupply, int16_t temperatureSupply,  int16_t voltageSupply)
+void CAN::sendValveDataPart3(int16_t currentPositionSupply, int16_t voltageSupply)
 {
-  uint8_t data[6];
+  uint8_t data[4];
   memcpy(data, &currentPositionSupply, 2);
-  memcpy(data + 2, &temperatureSupply, 2);
-  memcpy(data + 4, &voltageSupply, 2);
+  memcpy(data + 2, &voltageSupply, 2);
 
-  _can->sendMsgBuf(static_cast<uint32_t>(Var::Label::VALVE_DATA_PART_3), 0, 6, data);
+  _can->sendMsgBuf(static_cast<uint32_t>(Var::Label::VALVE_DATA_PART_3), 0, 4, data);
 }
 
-void CAN::receiveValveDataPart3(float *currentPositionSupply, float *temperatureSupply, float *voltageSupply)
+void CAN::receiveValveDataPart3(float *currentPositionSupply, float *voltageSupply)
 {
-  int16_t currentPositionSupplyRaw, temperatureSupplyRaw, voltageSupplyRaw;
+  int16_t currentPositionSupplyRaw, voltageSupplyRaw;
 
   memcpy(&currentPositionSupplyRaw, _latestData, 2);
-  memcpy(&temperatureSupplyRaw, _latestData + 2, 2);
   memcpy(&voltageSupplyRaw, _latestData + 4, 2);
 
   *currentPositionSupply = (float)currentPositionSupplyRaw / 10.0;
-  *temperatureSupply = (float)temperatureSupplyRaw;
   *voltageSupply = (float)voltageSupplyRaw / 100.0;
 }
 

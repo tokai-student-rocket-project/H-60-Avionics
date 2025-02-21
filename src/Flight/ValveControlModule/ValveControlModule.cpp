@@ -305,7 +305,6 @@ void sendValveData()
   
   can.sendValveDataPart3(
       supplyValve.readPosition(1),
-      supplyValve.readTemperature(1),
       supplyValve.readVoltage(1));
 }
 

@@ -63,22 +63,22 @@ void setup()
   Serial.begin(115200);
   SPI.begin();
 
-  // MsgPacketizer::subscribe_manual(0x0A,
-  //   [&](char ident, uint32_t micros, uint16_t flightTime, uint8_t flightMode, float loggerUsage,
-  //     uint8_t phase, uint8_t x0, uint8_t x1, uint8_t y0, uint8_t y1, uint8_t z0, uint8_t z1
-  //     ) {
-  //       Serial.print(ident); Serial.print(",");
-  //       Serial.print(micros); Serial.print(",");
-  //       Serial.print(flightTime); Serial.print(",");
-  //       Serial.print(flightMode); Serial.print(",");
-  //       Serial.print(loggerUsage); Serial.print(",");
+  MsgPacketizer::subscribe_manual(0x0A,
+    [&](char ident, uint32_t micros, uint16_t flightTime, uint8_t flightMode, float loggerUsage,
+      uint8_t phase, uint8_t x0, uint8_t x1, uint8_t y0, uint8_t y1, uint8_t z0, uint8_t z1
+      ) {
+        Serial.print(ident); Serial.print(F(","));
+        Serial.print(micros); Serial.print(F(","));
+        Serial.print(flightTime); Serial.print(F(","));
+        Serial.print(flightMode); Serial.print(F(","));
+        Serial.print(loggerUsage); Serial.print(F(","));
 
-  //       Serial.print(phase); Serial.print(",");
-  //       Serial.print((float)((int16_t)(uint16_t(x1) << 8 | uint16_t(x0))) * 0.049 * 9.80665); Serial.print(",");
-  //       Serial.print((float)((int16_t)(uint16_t(y1) << 8 | uint16_t(y0))) * 0.049 * 9.80665); Serial.print(",");
-  //       Serial.print((float)((int16_t)(uint16_t(z1) << 8 | uint16_t(z0))) * 0.049 * 9.80665); Serial.print("\n");
-  //   }
-  // );
+        Serial.print(phase); Serial.print(F(","));
+        Serial.print((float)((int16_t)(uint16_t(x1) << 8 | uint16_t(x0))) * 0.049 * 9.80665); Serial.print(F(","));
+        Serial.print((float)((int16_t)(uint16_t(y1) << 8 | uint16_t(y0))) * 0.049 * 9.80665); Serial.print(F(","));
+        Serial.print((float)((int16_t)(uint16_t(z1) << 8 | uint16_t(z0))) * 0.049 * 9.80665); Serial.print("\n");
+    }
+  );
 
   while (!Serial)
     ;

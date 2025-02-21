@@ -10,10 +10,10 @@
 StaticJsonDocument<4096> packet;
 
 
-uint16_t separation1ProtectionTime = 8232;
+uint16_t separation1ProtectionTime = 8232; // 8232
 uint16_t separation1ForceTime = 11232;
-uint16_t separation2ProtectionTime = 1; // 18232
-uint16_t separation2ForceTime = 1; // 19232
+uint16_t separation2ProtectionTime = 1000; // 18232
+uint16_t separation2ForceTime = 1000; // 19232
 uint16_t landingTime = 24832;
 
 
@@ -45,8 +45,8 @@ void setup() {
                                uint8_t satelliteCount,
                                float latitude,
                                float longitude,
-                                int16_t height,
-                                int16_t speed,
+                                // int16_t height,
+                                // int16_t speed,
                                uint16_t accuracy,
                                int16_t motorTemperature,
                                int16_t mcuTemperature,
@@ -87,8 +87,8 @@ void setup() {
                              packet["gnss"]["satellites"] = satelliteCount;
                              packet["gnss"]["latitude_deg"] = latitude;
                              packet["gnss"]["longitude_deg"] = longitude;
-                             packet["gnss"]["height_m"] = (float)height / 10.0;
-                             packet["gnss"]["speed_mps"] = (float)speed / 10.0;
+                            //  packet["gnss"]["height_m"] = (float)height / 10.0;
+                            //  packet["gnss"]["speed_mps"] = (float)speed / 10.0;
                              packet["gnss"]["accuracy_m"] = (float)accuracy / 10.0;
 
                              packet["valve"]["motorTemperature_degC"] = (float)motorTemperature / 100.0;

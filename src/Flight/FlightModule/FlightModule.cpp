@@ -1,16 +1,16 @@
 #include <Arduino.h>
 #include <TaskManager.h>
 #include <MsgPacketizer.h>
-#include <Lib_Var.hpp>
-#include <Lib_CAN.hpp>
-#include <Lib_Telemeter.hpp>
-#include <Lib_FlightMode.hpp>
-#include <Lib_FlightTime.hpp>
-#include <Lib_Logger1.hpp>
-#include <Lib_FlightPin.hpp>
-#include <Lib_Buzzer.hpp>
-#include <Lib_Shiranui.hpp>
-#include <Lib_GNSS.hpp>
+#include "Lib_Var.hpp"
+#include "Lib_CAN.hpp"
+#include "Lib_Telemeter.hpp"
+#include "Lib_FlightMode.hpp"
+#include "Lib_FlightTime.hpp"
+#include "Lib_Logger1.hpp"
+#include "Lib_FlightPin.hpp"
+#include "Lib_Buzzer.hpp"
+#include "Lib_Shiranui.hpp"
+#include "Lib_GNSS.hpp"
 
 char ident = 0;
 
@@ -34,8 +34,13 @@ Shiranui sn3(4, "sn3");
 Shiranui sn4(3, "sn4");
 GNSS gnss;
 
+
+//////////////////////////////////////
+// 不知火分離前にアナウンスしたい時: true
 bool isSeparation1Announced = false;
 bool isSeparation2Announced = false;
+//////////////////////////////////////
+
 bool doLogging = false;
 
 bool isFalling;
@@ -58,7 +63,7 @@ float accuracy;
 
 float motorTemperature, mcuTemperature, current, inputVoltage;
 float currentPosition, currentDesiredPosition, currentVelocity;
-float currentSupplyPosition, voltage, temperature;
+float currentSupplyPosition, voltage;
 
 bool sensingModuleAvailable = false;
 bool sensingModuleAvailableAnnounced = false;
@@ -112,8 +117,8 @@ void task100Hz()
     satelliteCount = gnss.getSatelliteCount();
     latitude = gnss.getLatitude();
     longitude = gnss.getLongitude();
-    height = gnss.getAltitude();
-    speed = gnss.getSpeed();
+    // height = gnss.getAltitude();
+    // speed = gnss.getSpeed();
     accuracy = gnss.getAccuracy();
 
     ledGnssRx.set(fixType == 3);
@@ -262,7 +267,7 @@ void task100Hz()
   }
   }
 
-  bool newDoLogging = flightMode.isBetween(Var::FlightMode::READY_TO_FLY, Var::FlightMode::LANDED);
+  bool newDoLogging = flightMode.isBetween(Var::FlightMode::READY_TO_FLY, Var::FlightMode::SHUTDOWN); // LANDED // Var::FlightMode::SHUTDOWN まででもいいかも
 
   if (newDoLogging != doLogging)
   {
@@ -276,13 +281,23 @@ void task100Hz()
   // フライトモードの表示
   // Serial.println(flightMode.currentNumber());
 
+//
+//   const auto &logPacket = MsgPacketizer::encode(0x0A,
+//                                                 ident, millis(), flightTime.get(), flightMode.currentNumber(), logger.getUsage(),
+//                                                 flightPin.isOpen(), buzzer.isOn(), sn3.isOn(), sn4.isOn(),
+//                                                 isFalling, altitude, isLaunchMode, forceX_N, jerkX_mps3,
+//                                                 gnssIsAvailable, unixEpoch, isFixed, fixType, satelliteCount, latitude, longitude, height, speed, accuracy,
+//                                                 motorTemperature, mcuTemperature, current, inputVoltage,
+//                                                 currentPosition, currentDesiredPosition, currentVelocity, currentSupplyPosition, voltage);
+//
+
   const auto &logPacket = MsgPacketizer::encode(0x0A,
-                                                ident, millis(), flightTime.get(), flightMode.currentNumber(), logger.getUsage(),
-                                                flightPin.isOpen(), buzzer.isOn(), sn3.isOn(), sn4.isOn(),
-                                                isFalling, altitude, isLaunchMode, forceX_N, jerkX_mps3,
-                                                gnssIsAvailable, unixEpoch, isFixed, fixType, satelliteCount, latitude, longitude, height, speed, accuracy,
-                                                motorTemperature, mcuTemperature, current, inputVoltage,
-                                                currentPosition, currentDesiredPosition, currentVelocity, currentSupplyPosition, temperature, voltage);
+                                                  ident, millis(), flightTime.get(), flightMode.currentNumber(), logger.getUsage(),
+                                                  flightPin.isOpen(), buzzer.isOn(), sn3.isOn(),
+                                                  isFalling, altitude, isLaunchMode, forceX_N, jerkX_mps3,
+                                                  gnssIsAvailable, unixEpoch, isFixed, fixType, satelliteCount, latitude, longitude, accuracy,
+                                                  motorTemperature, mcuTemperature, current, inputVoltage,
+                                                  currentPosition, currentDesiredPosition, currentVelocity, currentSupplyPosition, voltage);
 
   if (doLogging)
   {
@@ -320,8 +335,8 @@ void task2Hz()
                                                       static_cast<uint8_t>(satelliteCount),
                                                       static_cast<float>(latitude),
                                                       static_cast<float>(longitude),
-                                                      static_cast<int16_t>(height * 10),
-                                                      static_cast<int16_t>(speed * 10),
+                                                      // static_cast<int16_t>(height * 10),
+                                                      // static_cast<int16_t>(speed * 10),
                                                       static_cast<uint16_t>(accuracy * 10),
                                                       static_cast<int16_t>(motorTemperature * 100),
                                                       static_cast<int16_t>(mcuTemperature * 100),
@@ -329,15 +344,13 @@ void task2Hz()
                                                       static_cast<int16_t>(currentPosition * 100),
                                                       static_cast<int16_t>(currentDesiredPosition * 100),
                                                       static_cast<int16_t>(currentVelocity * 100),
-                                                      static_cast<int16_t>(currentSupplyPosition * 10),
-                                                      static_cast<int16_t>(temperature),
+                                                      static_cast<int16_t>(currentSupplyPosition * 100),
                                                       static_cast<int16_t>(voltage * 100),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_1_PROTECTION_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_1_FORCE_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_2_PROTECTION_TIME),
                                                       static_cast<uint16_t>(flightTime.SEPARATION_2_FORCE_TIME),
                                                       static_cast<uint16_t>(flightTime.LANDING_TIME)
-                                                      
                                                       );
 
   telemeter.reserveData(telemetryPacket.data.data(), telemetryPacket.data.size());
@@ -370,8 +383,8 @@ void setup()
   setTimer(
       8282,  // SEPARATION_1_PROTECTION_TIME
       11282, // SEPARATION_1_FORCE_TIME
-      18382, // SEPARATION_2_PROTECTION_TIME
-      19382, // SEPARATION_2_FORCE_TIME
+      1000, // SEPARATION_2_PROTECTION_TIME // 18382
+      1000, // SEPARATION_2_FORCE_TIME // 19382
       24882  // LANDING_TIME
   );
 
@@ -483,11 +496,9 @@ void loop()
 
     case Var::Label::VALVE_DATA_PART_3:
     {
-      can.receiveValveDataPart3(&currentSupplyPosition, &temperature, &voltage);
+      can.receiveValveDataPart3(&currentSupplyPosition, &voltage);
       ledCanRx.toggle();
-      // Serial.println(temperature); // 確認用
-      // Serial.println(voltage); // 確認用
-
+      
       break;
     }
     }

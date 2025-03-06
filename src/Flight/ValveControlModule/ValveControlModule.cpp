@@ -22,7 +22,7 @@ OutputPin ledLaunchMode(A2);
 Buzzer buzzer(A6, "buzzer");
 
 B3MSC1170A mainValve;
-void openMainValve() { mainValve.setPosition(0x01, -6000, 0); }
+void openMainValve() { mainValve.setPosition(0x01, -5500, 0); }
 void closeMainValve() { mainValve.setPosition(0x01, 0, 1000); }
 
 // RS405CB supplyValve(3);

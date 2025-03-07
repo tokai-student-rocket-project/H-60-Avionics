@@ -381,11 +381,11 @@ void setup()
   gnss.begin();
 
   setTimer(
-      8982,  // SEPARATION_1_PROTECTION_TIME
-      11982, // SEPARATION_1_FORCE_TIME
+      8594,  // SEPARATION_1_PROTECTION_TIME
+      11594, // SEPARATION_1_FORCE_TIME
       1000, // SEPARATION_2_PROTECTION_TIME // 18382
       1000, // SEPARATION_2_FORCE_TIME // 19382
-      33250  // LANDING_TIME
+      30194  // LANDING_TIME
   );
 
   if (flightPin.isOpen())

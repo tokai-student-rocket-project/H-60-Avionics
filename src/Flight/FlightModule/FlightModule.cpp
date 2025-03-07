@@ -196,7 +196,7 @@ void task100Hz()
 
   case (Var::FlightMode::POWERED_CLIMB):
   {
-    if (flightTime.isElapsed(1000) && forceX_N < 0 && jerkX_mps3 < 0)
+    if (flightTime.isElapsed(2000) && forceX_N < 0 && jerkX_mps3 < 0)
     {
       flightMode.change(Var::FlightMode::FREE_CLIMB);
       Serial.println("BOUT");
@@ -381,11 +381,11 @@ void setup()
   gnss.begin();
 
   setTimer(
-      8282,  // SEPARATION_1_PROTECTION_TIME
-      11282, // SEPARATION_1_FORCE_TIME
+      8982,  // SEPARATION_1_PROTECTION_TIME
+      11982, // SEPARATION_1_FORCE_TIME
       1000, // SEPARATION_2_PROTECTION_TIME // 18382
       1000, // SEPARATION_2_FORCE_TIME // 19382
-      24882  // LANDING_TIME
+      33250  // LANDING_TIME
   );
 
   if (flightPin.isOpen())

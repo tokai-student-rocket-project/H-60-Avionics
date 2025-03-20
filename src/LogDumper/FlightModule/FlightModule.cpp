@@ -49,8 +49,6 @@ void printHeader()
   Serial.print(",");
   Serial.print("sn3IsOn");
   Serial.print(",");
-  Serial.print("sn4IsOn");
-  Serial.print(",");
 
   Serial.print("isFalling");
   Serial.print(",");
@@ -77,10 +75,6 @@ void printHeader()
   Serial.print(",");
   Serial.print("longitude");
   Serial.print(",");
-  Serial.print("height");
-  Serial.print(",");
-  Serial.print("speed");
-  Serial.print(",");
   Serial.print("accuracy");
   Serial.print(",");
 
@@ -97,6 +91,10 @@ void printHeader()
   Serial.print("currentDesiredPosition");
   Serial.print(",");
   Serial.print("currentVelocity");
+  Serial.print(",");
+  Serial.print("currentSupplyPosition");
+  Serial.print(",");
+  Serial.print("voltage");
   Serial.print("\n");
 }
 
@@ -107,11 +105,11 @@ void setup()
 
   MsgPacketizer::subscribe_manual(0x0A,
                                   [&](char ident, uint32_t millis, uint16_t flightTime, uint8_t flightMode, float loggerUsage,
-                                      bool flightPinIsOpen, bool buzzerIsOn, bool sn3IsOn, bool sn4IsOn,
+                                      bool flightPinIsOpen, bool buzzerIsOn, bool sn3IsOn,
                                       bool isFalling, float altitude, bool isLaunchMode, float forceX_N, float jerkX_mps3,
-                                      bool gnssIsAvailable, uint32_t unixEpoch, bool isFixed, uint8_t fixType, uint8_t satelliteCount, float latitude, float longitude, float height, float speed, float accuracy,
+                                      bool gnssIsAvailable, uint32_t unixEpoch, bool isFixed, uint8_t fixType, uint8_t satelliteCount, float latitude, float longitude, float accuracy,
                                       float motorTemperature, float mcuTemperature, float current, float inputVoltage,
-                                      float currentPosition, float currentDesiredPosition, float currentVelocity)
+                                      float currentPosition, float currentDesiredPosition, float currentVelocity, float currentSupplyPosition, float voltage)
                                   {
                                     Serial.print(ident); Serial.print(",");
                                     Serial.print(millis); Serial.print(",");
@@ -122,7 +120,6 @@ void setup()
                                     Serial.print(flightPinIsOpen); Serial.print(",");
                                     Serial.print(buzzerIsOn); Serial.print(",");
                                     Serial.print(sn3IsOn); Serial.print(",");
-                                    Serial.print(sn4IsOn); Serial.print(",");
 
                                     Serial.print(isFalling); Serial.print(",");
                                     Serial.print(altitude); Serial.print(",");
@@ -137,8 +134,6 @@ void setup()
                                     Serial.print(satelliteCount); Serial.print(",");
                                     Serial.print(latitude, 8); Serial.print(",");
                                     Serial.print(longitude, 8); Serial.print(",");
-                                    Serial.print(height); Serial.print(",");
-                                    Serial.print(speed); Serial.print(",");
                                     Serial.print(accuracy); Serial.print(",");
 
                                     Serial.print(motorTemperature); Serial.print(",");
@@ -147,7 +142,9 @@ void setup()
                                     Serial.print(inputVoltage); Serial.print(",");
                                     Serial.print(currentPosition); Serial.print(",");
                                     Serial.print(currentDesiredPosition); Serial.print(",");
-                                    Serial.print(currentVelocity);
+                                    Serial.print(currentVelocity); Serial.print(", ");
+                                    Serial.print(currentSupplyPosition); Serial.print(", ");
+                                    Serial.print(voltage); Serial.print(", ");
                                     Serial.print("\n");
                                   });
 

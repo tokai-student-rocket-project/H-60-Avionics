@@ -81,7 +81,7 @@ Filter::HPF<float> accelerationHighPassZ(5);
 
 constexpr float gravity_mps2 = 9.80665;
 constexpr float initialPitch_deg = 90.0;
-constexpr float characteristicMass_kg = 11.58;
+constexpr float characteristicMass_kg = 12.41;
 float gravityX_mps2, gravityY_mps2, gravityZ_mps2;
 float linearAccelerationX_mps2, linearAccelerationY_mps2, linearAccelerationZ_mps2;
 float forceX_N;

@@ -10,11 +10,11 @@
 StaticJsonDocument<4096> packet;
 
 
-uint16_t separation1ProtectionTime = 8594;
-uint16_t separation1ForceTime = 11594;
+uint16_t separation1ProtectionTime = 8605;
+uint16_t separation1ForceTime = 11605;
 uint16_t separation2ProtectionTime = 1000;
 uint16_t separation2ForceTime = 1000;
-uint16_t landingTime = 30194;
+uint16_t landingTime = 30305;
 
 
 void setup() {

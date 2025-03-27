@@ -1,0 +1,7 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "Hirose_Connector")(type "KiCad")(uri "${KIPRJMOD}/../External_Library/Hirose_Connector/Hirose_Connector.pretty")(options "")(descr ""))
+  (lib (name "ABX00012")(type "KiCad")(uri "${KIPRJMOD}/../External_Library/ABX00012")(options "")(descr ""))
+  (lib (name "Akizuki_BME280_Module")(type "KiCad")(uri "${KIPRJMOD}/../External_Library/Akizuki_BME280_Module/Akizuki_BME280_Module.pretty")(options "")(descr ""))
+  (lib (name "Akizuki_BNO055_Module")(type "KiCad")(uri "${KIPRJMOD}/../External_Library/Akizuki_BNO055_Module/Akizuki_BNO055_Module.pretty")(options "")(descr ""))
+)

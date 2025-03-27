@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "TSRP_IC")(type "KiCad")(uri "${KIPRJMOD}/../External_Library/TSRP_IC/TSRP_IC.kicad_sym")(options "")(descr ""))
+)

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP R7FA4M1AB3CFM#AA0
+D The Renesas RA4M1 group of microcontrollers (MCUs) uses the high-performance Arm Cortex-M4 core and offers a segment LCD controller and a capacitive touch sensing unit input for intensive HMI designs. The RA4M1 MCU is built on a highly efficient low power process and is supported by an open and flexible ecosystem conceptthe Flexible Software Package (FSP), built on FreeRTOSand is expandable to use other RTOSes and middleware. The RA4M1 is suitable for applications where a large amount of capacitive touc
+K
+F https://www.renesas.com/document/dst/renesas-ra4m1-group-datasheet?language=en&r=1054146
+$ENDCMP
+#
+#End Doc Library

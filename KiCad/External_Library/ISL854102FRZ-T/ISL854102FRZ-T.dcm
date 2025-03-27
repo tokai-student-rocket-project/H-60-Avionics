@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ISL854102FRZ-T
+D The ISL854102 is a 1. 2A synchronous buck regulator with an input range of 3V to 40V. It provides an easy-to-use, high efficiency, low BOM count solution for a variety of applications. The ISL854102 integrates both high-side and low-side NMOS FETs and features a PFM mode for improved efficiency at light loads. This feature can be disabled if a forced PWM mode is needed. The ISL854102 switches at a default frequency of 500kHz; however, it can also be programmed using an external resistor from 300kHz to 2MHz.
+K
+F https://www.renesas.com/en-us/www/doc/datasheet/isl854102.pdf
+$ENDCMP
+#
+#End Doc Library

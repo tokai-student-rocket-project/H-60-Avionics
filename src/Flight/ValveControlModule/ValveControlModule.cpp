@@ -261,14 +261,14 @@ void syncFlightMode()
 
         case (7): // LANDED
         {
-          changeMode(Var::ValveMode::WAITING); // or WAITING
+          closeSupplyValve();
+          closeMainValve();
           Serial.println("LANDED");
           break;
         }
 
         case (8): // SHUTDOWN
         {
-          changeMode(Var::ValveMode::WAITING); // or WAITING
           supplyValve.torqueOn(0);
           mainValve.torqueOff(0x01);
           Serial.println("SHUTDOWN");
